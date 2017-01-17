@@ -18,11 +18,15 @@ public class MySQLite extends SQLiteOpenHelper {
     public static final String COL_CONTENT = "content";
     public static final int NUM_COL_CONTENT = 2;
 
+    public static final String COL_DUE_DATE = "due_date";
+    public static final int NUM_COL_DUE_DATE = 3;
+
 
     private static final String TABLE = "CREATE TABLE " + TABLE_NAME + " ("
             + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COL_TITLE + " TEXT NOT NULL, "
-            + COL_CONTENT + " TEXT NOT NULL);";
+            + COL_CONTENT + " TEXT NOT NULL, "
+            + COL_DUE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP);";
 
     /**
      * @param context Le contexte
@@ -44,6 +48,5 @@ public class MySQLite extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE " + TABLE_NAME + ";");
         onCreate(db);
     }
-
 
 }

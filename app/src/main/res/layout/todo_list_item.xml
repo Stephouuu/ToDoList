@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="14dp"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="80dp">
 
-    <TextView
-        android:id="@+id/todo_item_title"
-        android:textSize="22sp"
+    <LinearLayout
+        android:id="@+id/todo_item_text_root"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/todo_item_title"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/todo_item_content"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/todo_item_content"
+        android:id="@+id/todo_item_datetime"
         android:textSize="16sp"
-        android:layout_width="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,11 +1,11 @@
 package fr.todolist.todolist.activities;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity implements HomePageInterface
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.main_menu_search) {
-            /*Intent search = new Intent(this, SearchActivity.class);
+            Intent search = new Intent(this, SearchActivity.class);
             startActivity(search);
-            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);*/
+            overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             return true;
         }
         return false;

@@ -4,11 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -67,6 +67,8 @@ public class TodoItemDatabase {
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
+        values.put(MySQLite.COL_DUE_DATE, StaticTools.formatDateTime(item.year, item.month, item.day,
+                                            item.hour, item.minute));
 
         return (database.insert(MySQLite.TABLE_NAME, null, values));
     }
@@ -75,6 +77,8 @@ public class TodoItemDatabase {
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
+        values.put(MySQLite.COL_DUE_DATE, StaticTools.formatDateTime(item.year, item.month, item.day,
+                item.hour, item.minute));
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }
@@ -84,16 +88,16 @@ public class TodoItemDatabase {
      * @param id L'ID de l'éléphant à supprimer
      * @return Code d'erreur
      */
-    public int deleteElephant(int id) {
+    public int deleteItem(int id) {
         return (database.delete(MySQLite.TABLE_NAME, MySQLite.COL_ID + " = "  + id, null));
     }
 
     public List<TodoItemInfo> getItems() {
         String request = "SELECT * FROM " + MySQLite.TABLE_NAME;
+        request += " ORDER BY " + MySQLite.COL_DUE_DATE;
         List<TodoItemInfo> results = new ArrayList<>();
 
         Cursor cursor = database.rawQuery(request, null);
-        //Cursor cursor = database.rawQuery(request, new String[] {name});
 
         if (cursor.getCount() > 0)
         {
@@ -104,7 +108,6 @@ public class TodoItemDatabase {
             }
         }
         cursor.close();
-
         return (results);
     }
 
@@ -217,6 +220,10 @@ public class TodoItemDatabase {
         item.id = cursor.getInt(MySQLite.NUM_COL_ID);
         item.title = cursor.getString(MySQLite.NUM_COL_TITLE);
         item.content = cursor.getString(MySQLite.NUM_COL_CONTENT);
+        item.dateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE);
+
+        StaticTools.retrieveDateTime(item, item.dateTime);
+
         return (item);
     }
 }

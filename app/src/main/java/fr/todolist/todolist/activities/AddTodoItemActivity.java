@@ -1,8 +1,8 @@
 package fr.todolist.todolist.activities;
 
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,15 +16,20 @@ import java.util.TimerTask;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.database.TodoItemDatabase;
+import fr.todolist.todolist.fragments.DatePickerFragment;
+import fr.todolist.todolist.fragments.TimePickerFragment;
+import fr.todolist.todolist.interfaces.AddTodoItemInterface;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
-public class AddTodoItemActivity extends AppCompatActivity {
+public class AddTodoItemActivity extends AppCompatActivity implements AddTodoItemInterface {
 
     private View root;
 
     private EditText titleEditText;
     private EditText contentEditText;
+    private EditText dateEditText;
+    private EditText timeEditText;
     private Button addButton;
 
     private TodoItemDatabase database;
@@ -48,6 +53,8 @@ public class AddTodoItemActivity extends AppCompatActivity {
 
         titleEditText = (EditText)findViewById(R.id.add_item_title);
         contentEditText = (EditText)findViewById(R.id.add_item_content);
+        dateEditText = (EditText)findViewById(R.id.add_item_date);
+        timeEditText = (EditText)findViewById(R.id.add_item_time);
         addButton = (Button)findViewById(R.id.add_item_button);
         root = findViewById(R.id.add_todo_item_root);
 
@@ -75,11 +82,7 @@ public class AddTodoItemActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (confirm()) {
-                    database.insertItem(info);
-                    setResult(RESULT_OK);
-                    finish();
-                }
+                onValid();
             }
         });
 
@@ -131,6 +134,24 @@ public class AddTodoItemActivity extends AppCompatActivity {
             }
         });
 
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StaticTools.hideKeyboard(getApplicationContext(), root);
+                DialogFragment dialog = new DatePickerFragment();
+                dialog.show(getSupportFragmentManager(), "Date");
+            }
+        });
+
+        timeEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StaticTools.hideKeyboard(getApplicationContext(), root);
+                DialogFragment dialog = new TimePickerFragment();
+                dialog.show(getSupportFragmentManager(), "Time");
+            }
+        });
+
     }
 
     @Override
@@ -160,5 +181,29 @@ public class AddTodoItemActivity extends AppCompatActivity {
         }
         contentEditText.setError(null);
         return true;
+    }
+
+    @Override
+    public void onDateSet(int year, int month, int day) {
+        dateEditText.setText(String.format(getString(R.string.format_date), year, month + 1, day));
+        info.year = year;
+        info.month = month;
+        info.day = day;
+    }
+
+    @Override
+    public void onTimeSet(int hour, int minutes) {
+        timeEditText.setText(String.format(getString(R.string.format_time), hour, minutes));
+        info.hour = hour;
+        info.minute = minutes;
+    }
+
+    @Override
+    public void onValid() {
+        if (confirm()) {
+            database.insertItem(info);
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 }

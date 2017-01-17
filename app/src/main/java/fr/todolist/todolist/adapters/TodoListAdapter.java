@@ -62,6 +62,7 @@ public class TodoListAdapter extends BaseAdapter {
 
         ((TextView)view.findViewById(R.id.todo_item_title)).setText(item.title);
         ((TextView)view.findViewById(R.id.todo_item_content)).setText(item.content);
+        ((TextView)view.findViewById(R.id.todo_item_datetime)).setText(item.dateTime);
 
         return view;
     }
