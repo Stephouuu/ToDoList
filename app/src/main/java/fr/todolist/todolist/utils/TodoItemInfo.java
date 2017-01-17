@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class TodoItemInfo implements Parcelable {
 
-    public int id;
+    public long id;
     public String title;
     public String content;
     public String dateTime;
@@ -23,7 +23,7 @@ public class TodoItemInfo implements Parcelable {
         id = 0;
         title = "Title";
         content = "Content";
-        dateTime = "0000-00-00 00:00:00";
+        dateTime = "0000-00-00 00:00";
         year = 0;
         month = 0;
         day = 0;
@@ -38,7 +38,7 @@ public class TodoItemInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(id);
+        out.writeLong(id);
         out.writeString(title);
         out.writeString(content);
         out.writeString(dateTime);
@@ -63,7 +63,7 @@ public class TodoItemInfo implements Parcelable {
     };
 
     private TodoItemInfo(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         title = in.readString();
         content = in.readString();
         dateTime = in.readString();

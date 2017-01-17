@@ -3,7 +3,6 @@ package fr.todolist.todolist.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -29,7 +28,6 @@ public class StaticTools {
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         Date date = cal.getTime();
-        Log.i("formatDateTime", dateFormat.format(date));
         return dateFormat.format(date);
     }
 
@@ -56,6 +54,24 @@ public class StaticTools {
             info.minute = cal.get(Calendar.MINUTE);
         }
         return (info);
+    }
+
+    public static long castDateTimeToUnixTime(String dateTime) {
+        Calendar cal = new GregorianCalendar();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        Date date = null;
+        try {
+            date = dateFormat.parse(dateTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (date != null) {
+            cal.setTime(date);
+            return (cal.getTimeInMillis());
+        }
+
+        return (0);
     }
 
     /**

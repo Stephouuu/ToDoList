@@ -62,23 +62,23 @@ public class TodoItemDatabase {
         database.close();
     }
 
-    public long insertItem(TodoItemInfo item) {
+    public TodoItemInfo insertItem(TodoItemInfo item) {
+        item.dateTime = StaticTools.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
 
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
-        values.put(MySQLite.COL_DUE_DATE, StaticTools.formatDateTime(item.year, item.month, item.day,
-                                            item.hour, item.minute));
+        values.put(MySQLite.COL_DUE_DATE, item.dateTime);
 
-        return (database.insert(MySQLite.TABLE_NAME, null, values));
+        item.id = database.insert(MySQLite.TABLE_NAME, null, values);
+        return (item);
     }
 
-    public int updateElephant(TodoItemInfo item) {
+    public int updateTodoItem(TodoItemInfo item) {
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
-        values.put(MySQLite.COL_DUE_DATE, StaticTools.formatDateTime(item.year, item.month, item.day,
-                item.hour, item.minute));
+        values.put(MySQLite.COL_DUE_DATE, item.dateTime);
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }
@@ -92,9 +92,8 @@ public class TodoItemDatabase {
         return (database.delete(MySQLite.TABLE_NAME, MySQLite.COL_ID + " = "  + id, null));
     }
 
-    public List<TodoItemInfo> getItems() {
-        String request = "SELECT * FROM " + MySQLite.TABLE_NAME;
-        request += " ORDER BY " + MySQLite.COL_DUE_DATE;
+    public List<TodoItemInfo> getItemsOrderByDueDate() {
+        String request = "SELECT * FROM " + MySQLite.TABLE_NAME + " ORDER BY " + MySQLite.COL_DUE_DATE;
         List<TodoItemInfo> results = new ArrayList<>();
 
         Cursor cursor = database.rawQuery(request, null);

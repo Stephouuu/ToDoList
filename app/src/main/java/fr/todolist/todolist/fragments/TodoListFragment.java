@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class TodoListFragment extends Fragment {
     private FloatingActionButton addFab;
     private ListView list;
     private TodoListAdapter adapter;
+    private TextView noItemTextView;
 
     private TodoItemDatabase database;
 
@@ -37,6 +39,7 @@ public class TodoListFragment extends Fragment {
 
         addFab = (FloatingActionButton)view.findViewById(R.id.todo_fragment_fab);
         list = (ListView)view.findViewById(R.id.todo_fragment_list);
+        noItemTextView = (TextView)view.findViewById(R.id.todo_fragment_noitem);
 
         adapter = new TodoListAdapter(getContext(), new TodoListInterface() {
             @Override
@@ -63,7 +66,12 @@ public class TodoListFragment extends Fragment {
     }
 
     private void refreshList() {
-        List<TodoItemInfo> list = database.getItems();
+        List<TodoItemInfo> list = database.getItemsOrderByDueDate();
+        if (list.isEmpty()) {
+            noItemTextView.setVisibility(View.VISIBLE);
+        } else {
+            noItemTextView.setVisibility(View.GONE);
+        }
         adapter.clear();
         adapter.addList(list);
     }

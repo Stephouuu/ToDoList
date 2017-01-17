@@ -1,7 +1,12 @@
 package fr.todolist.todolist.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -19,6 +24,7 @@ import fr.todolist.todolist.database.TodoItemDatabase;
 import fr.todolist.todolist.fragments.DatePickerFragment;
 import fr.todolist.todolist.fragments.TimePickerFragment;
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
+import fr.todolist.todolist.receivers.AlarmReceiver;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -161,8 +167,19 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WAKE_LOCK)
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, StaticTools.castDateTimeToUnixTime(info.dateTime));
+            }
+        }
+    }
+
     private boolean confirm() {
-        return (confirmTitle() && confirmContent());
+        return (confirmTitle() && confirmContent() && confirmDate()
+                && confirmTime());
     }
 
     private boolean confirmTitle() {
@@ -180,6 +197,24 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             return false;
         }
         contentEditText.setError(null);
+        return true;
+    }
+
+    private boolean confirmDate() {
+        if (dateEditText.getText().toString().trim().length() == 0) {
+            dateEditText.setError(getResources().getString(R.string.empty));
+            return false;
+        }
+        dateEditText.setError(null);
+        return true;
+    }
+
+    private boolean confirmTime() {
+        if (timeEditText.getText().toString().trim().length() == 0) {
+            timeEditText.setError(getResources().getString(R.string.empty));
+            return false;
+        }
+        timeEditText.setError(null);
         return true;
     }
 
@@ -201,7 +236,12 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     @Override
     public void onValid() {
         if (confirm()) {
-            database.insertItem(info);
+            info = database.insertItem(info);
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED) {
+                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, StaticTools.castDateTimeToUnixTime(info.dateTime));
+            } else {
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WAKE_LOCK}, 0);
+            }
             setResult(RESULT_OK);
             finish();
         }
