@@ -60,8 +60,8 @@ public class TodoListAdapter extends BaseAdapter {
         TodoItemInfo item = getItem(index);
 
         View view = refreshView(old, parent, item);
-        String date = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day,
-                                                                item.hour, item.minute);
+        String date = DateTimeManager.getUserFriendlyDateTime(context, item.dateTime, item.year,
+                item.month, item.day, item.hour, item.minute);
 
         ((TextView)view.findViewById(R.id.todo_item_title)).setText(item.title);
         ((TextView)view.findViewById(R.id.todo_item_content)).setText(item.content);

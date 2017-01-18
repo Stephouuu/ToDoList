@@ -65,14 +65,10 @@ public class TodoItemDatabase {
     }
 
     public TodoItemInfo insertItem(TodoItemInfo item) {
-        item.dateTime = DateTimeManager.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
-        //item.userFriendlyDateTime = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day, item.hour, item.minute);
-
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
-        //values.put(MySQLite.COL_DUE_DATE_USER, item.userFriendlyDateTime);
 
         item.id = database.insert(MySQLite.TABLE_NAME, null, values);
         return (item);
@@ -80,13 +76,11 @@ public class TodoItemDatabase {
 
     public int updateTodoItem(TodoItemInfo item) {
         item.dateTime = DateTimeManager.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
-        //item.userFriendlyDateTime = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day, item.hour, item.minute);
 
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
-        //values.put(MySQLite.COL_DUE_DATE_USER, item.userFriendlyDateTime);
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }

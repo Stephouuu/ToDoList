@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -223,10 +224,17 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     @Override
     public void onValid() {
         if (confirm()) {
-            info = database.insertItem(info);
-            AlarmReceiver.addAlarm(this, info.title, info.content, info.id, DateTimeManager.castDateTimeToUnixTime(info.dateTime));
-            setResult(RESULT_OK);
-            finish();
+            info.dateTime = DateTimeManager.formatDateTime(info.year, info.month, info.day, info.hour, info.minute);
+            long time = DateTimeManager.castDateTimeToUnixTime(info.dateTime);
+
+            if (DateTimeManager.isDateTimeValid(time)) {
+                info = database.insertItem(info);
+                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, time);
+                setResult(RESULT_OK);
+                finish();
+            } else {
+                Toast.makeText(this, "The due date must be in the future", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

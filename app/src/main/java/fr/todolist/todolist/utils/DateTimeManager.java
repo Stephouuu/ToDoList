@@ -2,6 +2,11 @@ package fr.todolist.todolist.utils;
 
 import android.content.Context;
 
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.Minutes;
+import org.joda.time.Years;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,12 +21,12 @@ import fr.todolist.todolist.R;
 
 public class DateTimeManager {
 
-    private static String[] Months = new String[] {
+    private static String[] MonthArray = new String[] {
             "Jan", "Fev", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
             "Sep", "Oct", "Nov", "Dec"
     };
 
-    private static String[] Days = new String[] {
+    private static String[] DaysSuffix = new String[] {
             "st", "nd", "rd"
     };
 
@@ -76,44 +81,49 @@ public class DateTimeManager {
         return (info);
     }
 
-    public static String getUserFriendlyDateTime(Context context, int year, int month, int day, int hour, int minute) {
-        Calendar cal = Calendar.getInstance();
-        String ret = "";
+    public static boolean isDateTimeValid(long time) {
+        return (Calendar.getInstance().getTimeInMillis() < time);
+    }
 
-        boolean sameYear = cal.get(Calendar.YEAR) == year;
-        boolean sameMonth = cal.get(Calendar.MONTH) == month;
-        boolean sameDay = cal.get(Calendar.DAY_OF_MONTH) == day;
-        boolean sameHour = cal.get(Calendar.HOUR_OF_DAY) == hour;
-        boolean sameMinute = cal.get(Calendar.MINUTE) == minute;
+    public static String getUserFriendlyDateTime(Context context, String date, int year, int month,
+                                                 int day, int hour, int minute) {
 
-        int diffDays = day - cal.get(Calendar.DAY_OF_MONTH) - 1;
-        int diffHours = hour - cal.get(Calendar.HOUR_OF_DAY) - 1;
-        int diffMinutes = minute - cal.get(Calendar.MINUTE) - 1;
 
+        String ret = "null";
         String stringYear = String.valueOf(year);
         String stringMonth = getMonth(month);
         String stringDay = getDay(day);
 
-        if (sameYear && sameMonth) {
-            if (sameDay) {
-                if (diffHours < 1) {
-                    ret = String.format(context.getString(R.string.date_today_minutes), diffMinutes + 60);
+        try {
+            Date tmp = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(date);
+            DateTime dateTime = new DateTime(tmp.getTime());
+            DateTime today = new DateTime();
+            DateTime tomorrow = today.plusDays(1);
+
+            boolean thisYear = Years.yearsBetween(today, dateTime).getYears() == 0;
+
+            int nbHours = Hours.hoursBetween(today, dateTime).getHours();
+            int nbMinutes = Minutes.minutesBetween(today, dateTime).getMinutes();
+
+            if (nbHours == 0) {
+                if (nbMinutes == 0) {
+                    ret = context.getString(R.string.date_transform_seconds);
                 } else {
-                    ret = String.format(context.getString(R.string.date_today_hours), diffHours);
+                    ret = context.getString(R.string.date_transform_minutes, nbMinutes);
                 }
+            } else if (nbHours < 24) {
+                ret = context.getString(R.string.date_transform_hours, nbHours);
+            } else if (dateTime.toLocalDate().equals(tomorrow.toLocalDate())) {
+                ret = context.getString(R.string.date_transform_tomorrow);
             } else {
-                if (diffDays < 1) {
-                    ret = String.format(context.getString(R.string.date_today_hours), diffHours + 24);
+                if (thisYear) {
+                    ret = stringDay + " " + stringMonth;
                 } else {
-                    ret = String.format(context.getString(R.string.date_days), diffDays);
+                    ret = stringDay + " " + stringMonth + " " + stringYear;
                 }
             }
-        } else {
-            if (sameYear) {
-                ret = String.format(context.getString(R.string.date_time), stringDay, stringMonth, "");
-            } else {
-                ret = String.format(context.getString(R.string.date_time), stringDay, stringMonth, stringYear);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return (ret);
@@ -122,8 +132,8 @@ public class DateTimeManager {
     private static String getDay(int day) {
         String str = String.valueOf(day);
 
-        if (day - 1 < Days.length) {
-            str += Days[day - 1];
+        if (day - 1 < DaysSuffix.length) {
+            str += DaysSuffix[day - 1];
         } else {
             str += "th";
         }
@@ -131,7 +141,7 @@ public class DateTimeManager {
     }
 
     private static String getMonth(int month) {
-        return (Months[month]);
+        return (MonthArray[month]);
     }
 
 }
