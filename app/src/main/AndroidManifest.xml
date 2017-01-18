@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.todolist.todolist">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -13,16 +13,19 @@
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".activities.AddTodoItemActivity" />
-        <activity android:name=".activities.SearchActivity"/>
+        <activity android:name=".activities.SearchActivity" />
 
-        <receiver
-            android:name=".receivers.AlarmReceiver"/>
+        <receiver android:name=".receivers.AlarmReceiver" />
 
+        <activity
+            android:name=".activities.ConsultationActivity"
+            android:label="@string/title_activity_consultation"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

@@ -12,6 +12,7 @@ import java.util.List;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -59,10 +60,12 @@ public class TodoListAdapter extends BaseAdapter {
         TodoItemInfo item = getItem(index);
 
         View view = refreshView(old, parent, item);
+        String date = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day,
+                                                                item.hour, item.minute);
 
         ((TextView)view.findViewById(R.id.todo_item_title)).setText(item.title);
         ((TextView)view.findViewById(R.id.todo_item_content)).setText(item.content);
-        ((TextView)view.findViewById(R.id.todo_item_datetime)).setText(item.dateTime);
+        ((TextView)view.findViewById(R.id.todo_item_datetime)).setText(date);
 
         return view;
     }

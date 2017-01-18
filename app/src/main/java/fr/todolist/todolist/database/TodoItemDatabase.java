@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.todolist.todolist.utils.StaticTools;
+import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -16,6 +16,8 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  */
 
 public class TodoItemDatabase {
+
+    private Context context;
 
     /**
      * Version de la base de donnée
@@ -45,7 +47,7 @@ public class TodoItemDatabase {
      */
     public TodoItemDatabase(Context context) {
         mySQLite = new MySQLite(context, NOM_BDD, null, VERSION_BDD);
-
+        this.context = context;
     }
 
     /**
@@ -63,22 +65,28 @@ public class TodoItemDatabase {
     }
 
     public TodoItemInfo insertItem(TodoItemInfo item) {
-        item.dateTime = StaticTools.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
+        item.dateTime = DateTimeManager.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
+        //item.userFriendlyDateTime = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day, item.hour, item.minute);
 
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
+        //values.put(MySQLite.COL_DUE_DATE_USER, item.userFriendlyDateTime);
 
         item.id = database.insert(MySQLite.TABLE_NAME, null, values);
         return (item);
     }
 
     public int updateTodoItem(TodoItemInfo item) {
+        item.dateTime = DateTimeManager.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
+        //item.userFriendlyDateTime = DateTimeManager.getUserFriendlyDateTime(context, item.year, item.month, item.day, item.hour, item.minute);
+
         ContentValues values = new ContentValues();
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
+        //values.put(MySQLite.COL_DUE_DATE_USER, item.userFriendlyDateTime);
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }
@@ -220,8 +228,9 @@ public class TodoItemDatabase {
         item.title = cursor.getString(MySQLite.NUM_COL_TITLE);
         item.content = cursor.getString(MySQLite.NUM_COL_CONTENT);
         item.dateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE);
+        //item.userFriendlyDateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE_USER);
 
-        StaticTools.retrieveDateTime(item, item.dateTime);
+        DateTimeManager.retrieveDateTime(item, item.dateTime);
 
         return (item);
     }

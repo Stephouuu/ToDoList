@@ -103,12 +103,17 @@ public class MainActivity extends AppCompatActivity implements HomePageInterface
     @Override
     public void onItemClick(TodoItemInfo item) {
         Log.i("main", "item click: " + item.title);
+        Intent intent = new Intent(getApplicationContext(), ConsultationActivity.class);
+        ConsultationActivity.setExtraItem(intent, item);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
     @Override
     public void addItem() {
         Intent intent = new Intent(getApplicationContext(), AddTodoItemActivity.class);
         startActivityForResult(intent, REQUEST_ADD_ITEM);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
 }

@@ -1,12 +1,7 @@
 package fr.todolist.todolist.activities;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -25,6 +20,7 @@ import fr.todolist.todolist.fragments.DatePickerFragment;
 import fr.todolist.todolist.fragments.TimePickerFragment;
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
 import fr.todolist.todolist.receivers.AlarmReceiver;
+import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -164,17 +160,8 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     public boolean onSupportNavigateUp() {
         setResult(RESULT_CANCELED);
         finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 0) {
-            if (grantResults.length > 0 && permissions[0].equals(Manifest.permission.WAKE_LOCK)
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, StaticTools.castDateTimeToUnixTime(info.dateTime));
-            }
-        }
     }
 
     private boolean confirm() {
@@ -237,11 +224,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     public void onValid() {
         if (confirm()) {
             info = database.insertItem(info);
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED) {
-                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, StaticTools.castDateTimeToUnixTime(info.dateTime));
-            } else {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WAKE_LOCK}, 0);
-            }
+            AlarmReceiver.addAlarm(this, info.title, info.content, info.id, DateTimeManager.castDateTimeToUnixTime(info.dateTime));
             setResult(RESULT_OK);
             finish();
         }
