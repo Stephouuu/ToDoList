@@ -88,7 +88,6 @@ public class DateTimeManager {
     public static String getUserFriendlyDateTime(Context context, String date, int year, int month,
                                                  int day, int hour, int minute) {
 
-
         String ret = "null";
         String stringYear = String.valueOf(year);
         String stringMonth = getMonth(month);

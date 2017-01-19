@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
@@ -16,7 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.activities.MainActivity;
+import fr.todolist.todolist.database.TodoItemDatabase;
 import fr.todolist.todolist.utils.AlertInfo;
+import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
  * Created by Stephane on 17/01/2017.
@@ -25,7 +28,7 @@ import fr.todolist.todolist.utils.AlertInfo;
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     private final static String EXTRA_ALARM = "extra.receiver.alert";
-    private final static String EXTRA_KEY = "extra.receiver.key";
+    private final static String EXTRA_ITEM = "extra.receiver.item";
 
     private final static LongSparseArray<AlertInfo> Alerts = new LongSparseArray<>();
 
@@ -35,19 +38,19 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AlertInfo alert = intent.getParcelableExtra(EXTRA_ALARM);
-        Long key = intent.getLongExtra(EXTRA_KEY, -1);
-        if (key > -1) {
-            deleteAlarm(context, key);
+        TodoItemInfo item = intent.getParcelableExtra(EXTRA_ITEM);
+        if (item != null) {
+            deleteAlarm(context, item.id);
         }
 
         if (alert != null) {
-            alarm(context, String.format(context.getString(R.string.alert_title), alert.title), alert.content);
+            alarm(context, item, String.format(context.getString(R.string.alert_title), alert.title), alert.content);
         } else {
-            alarm(context, "Wake up!", "You have to do something");
+            alarm(context, item, "Wake up!", "You have to do something");
         }
     }
 
-    private void alarm(Context context, String title, String content) {
+    private void alarm(Context context, TodoItemInfo item, String title, String content) {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -55,9 +58,17 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 .setSmallIcon(R.drawable.todo_icon)
                 .setContentTitle(title)
                 .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setTicker(content);
 
         Intent intent = new Intent(context, MainActivity.class);
+        intent.setData(Uri.parse("doit://consultation/" + item.id));
+
+        TodoItemDatabase database = new TodoItemDatabase(context);
+        database.open();
+        item.status = TodoItemInfo.Status.Expired;
+        database.updateTodoItem(item);
+        database.close();
 
         builder.setContentIntent(PendingIntent.getActivity(context, id.get(), intent, PendingIntent.FLAG_ONE_SHOT));
         Notification notification = builder.build();
@@ -65,7 +76,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         manager.notify(id.incrementAndGet(), notification);
     }
 
-    public static void addAlarm(Context context, String title, String content, long key, long ms) {
+    public static void addAlarm(Context context, String title, String content, TodoItemInfo item, long ms) {
         AlertInfo alert = new AlertInfo();
         alert.title = title;
         alert.content = content;
@@ -74,10 +85,10 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(EXTRA_ALARM, alert);
-        intent.putExtra(EXTRA_KEY, key);
+        intent.putExtra(EXTRA_ITEM, item);
         PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alert.time, pIntent);
-        Alerts.put(key, alert);
+        Alerts.put(item.id, alert);
     }
 
     public static void deleteAlarm(Context context, long key) {

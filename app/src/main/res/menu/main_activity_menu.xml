@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/main_menu_search"
-        android:icon="@android:drawable/ic_menu_search"
+        android:icon="@mipmap/search"
         android:title="@string/search"
         medpics:showAsAction="ifRoom|collapseActionView" />
 

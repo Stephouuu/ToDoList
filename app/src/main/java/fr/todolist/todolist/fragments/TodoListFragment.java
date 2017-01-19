@@ -1,8 +1,9 @@
 package fr.todolist.todolist.fragments;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,31 +14,51 @@ import java.util.List;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.adapters.TodoListAdapter;
-import fr.todolist.todolist.database.TodoItemDatabase;
-import fr.todolist.todolist.interfaces.HomePageInterface;
+import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListFragment extends Fragment {
 
-    private FloatingActionButton addFab;
+    public static final String EXTRA_MODE = "todolist.mode";
+    public static final String EXTRA_SEARCH = "todolist.search.param";
+
+    public enum Mode {
+        DueDateASC,
+        DueDateDESC,
+        Title,
+        Status,
+        Content
+    }
+
     private ListView list;
     private TodoListAdapter adapter;
     private TextView noItemTextView;
-
-    private TodoItemDatabase database;
+    private Mode mode;
+    private String searchParameter;
 
     public TodoListFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle state) {
+        super.onCreate(state);
+        Bundle args = getArguments();
+        if (args != null) {
+            mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDateASC)));
+            searchParameter = args.getString(EXTRA_SEARCH);
+        } else {
+            mode = Mode.DueDateASC;
+        }
+        Log.i("mode onCreate", "" + mode);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.todo_list_fragment, container, false);
 
-        database = new TodoItemDatabase(getContext());
-        database.open();
+        Log.i("todolist", "mode: " + String.valueOf(mode));
 
-        addFab = (FloatingActionButton)view.findViewById(R.id.todo_fragment_fab);
         list = (ListView)view.findViewById(R.id.todo_fragment_list);
         noItemTextView = (TextView)view.findViewById(R.id.todo_fragment_noitem);
 
@@ -46,15 +67,15 @@ public class TodoListFragment extends Fragment {
             public void onItemClick(TodoItemInfo item) {
                 ((TodoListInterface) getActivity()).onItemClick(item);
             }
+
+            @Override
+            public void onItemLongClick(View view) {
+                ((TodoListInterface) getActivity()).onItemLongClick(view);
+            }
         });
         list.setAdapter(adapter);
 
-        addFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((HomePageInterface) getActivity()).addItem();
-            }
-        });
+
 
         return (view);
     }
@@ -63,17 +84,49 @@ public class TodoListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         refreshList();
-    }
-
-    private void refreshList() {
-        List<TodoItemInfo> list = database.getItemsOrderByDueDate();
-        if (list.isEmpty()) {
-            noItemTextView.setVisibility(View.VISIBLE);
-        } else {
+        if (mode != Mode.DueDateASC) {
             noItemTextView.setVisibility(View.GONE);
         }
-        adapter.clear();
-        adapter.addList(list);
+    }
+
+    public void setSearchParameter(String parameter) {
+        searchParameter = parameter;
+    }
+
+    public void refreshList() {
+        List<TodoItemInfo> list = getListItem();
+        if (list != null) {
+            if (list.isEmpty()) {
+                noItemTextView.setVisibility(View.VISIBLE);
+            } else {
+                noItemTextView.setVisibility(View.GONE);
+            }
+            adapter.clear();
+            adapter.addList(list);
+        }
+    }
+
+    @Nullable
+    private List<TodoItemInfo> getListItem() {
+        List<TodoItemInfo> list = null;
+        switch (mode) {
+            case DueDateASC:
+                list = ((SearchInterface) getActivity()).getItemsByDueDateASC();
+                break;
+            case DueDateDESC:
+                list = ((SearchInterface) getActivity()).getItemsByDueDateDESC();
+                break;
+            case Title:
+                list = ((SearchInterface) getActivity()).getItemsByTitle(searchParameter);
+                break;
+            case Status:
+                list = ((SearchInterface) getActivity()).getItemsByStatus(TodoItemInfo.Status.valueOf(searchParameter));
+                break;
+            case Content:
+                list = ((SearchInterface) getActivity()).getItemsByContent(searchParameter);
+                break;
+        }
+        return (list);
     }
 
 }

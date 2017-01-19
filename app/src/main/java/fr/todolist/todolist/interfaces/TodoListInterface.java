@@ -1,5 +1,7 @@
 package fr.todolist.todolist.interfaces;
 
+import android.view.View;
+
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -9,5 +11,6 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 public interface TodoListInterface {
 
     void onItemClick(TodoItemInfo item);
+    void onItemLongClick(View view);
 
 }

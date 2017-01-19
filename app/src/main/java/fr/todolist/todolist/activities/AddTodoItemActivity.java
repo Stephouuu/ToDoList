@@ -229,7 +229,8 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
             if (DateTimeManager.isDateTimeValid(time)) {
                 info = database.insertItem(info);
-                AlarmReceiver.addAlarm(this, info.title, info.content, info.id, time);
+                AlarmReceiver.addAlarm(this, info.title, info.content, info, time);
+                database.close();
                 setResult(RESULT_OK);
                 finish();
             } else {

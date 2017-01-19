@@ -20,19 +20,27 @@
     <string name="format_date">%1$04d-%2$02d-%3$02d</string>
     <string name="format_time">%1$02dh %2$02dmin</string>
 
-    <string name="alert_title">Past due: %s</string>
+    <string name="alert_title">Expired: %s</string>
     <string name="title_activity_consultation">ConsultationActivity</string>
 
     <string name="date_time">%1$s %2$s %3$s</string>
-    <!--<string name="date_today_hours">%d hours</string>
-    <string name="date_today_minutes">%d minute(s)</string>
-    <string name="date_tomorrow">Tomorrow</string>
-    <string name="date_days">%d days</string>-->
 
     <string name="date_transform_tomorrow">Tomorrow</string>
-    <string name="date_transform_seconds">Less than a minute</string>
+    <string name="date_transform_seconds">&lt; 1 minute</string>
     <string name="date_transform_minutes">%d minutes</string>
     <string name="date_transform_hours">%d hours</string>
     <string name="date_transform_days">%d days</string>
+
+    <string-array name="todo_status">
+        <item>In Progress</item>
+        <item>Expired</item>
+        <item>OK</item>
+    </string-array>
+
+    <string name="error_search_at_leat_three_character">Research must contains 1 characters at least</string>
+
+    <string name="search_by_title">Title</string>
+    <string name="search_by_content">Content</string>
+    <string name="search_by_status">Status</string>
 
 </resources>

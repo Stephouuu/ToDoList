@@ -1,6 +1,7 @@
 package fr.todolist.todolist.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,12 @@ public class TodoListAdapter extends BaseAdapter {
 
         ((TextView)view.findViewById(R.id.todo_item_title)).setText(item.title);
         ((TextView)view.findViewById(R.id.todo_item_content)).setText(item.content);
-        ((TextView)view.findViewById(R.id.todo_item_datetime)).setText(date);
+
+        if (item.status == TodoItemInfo.Status.InProgress) {
+            ((TextView) view.findViewById(R.id.todo_item_datetime)).setText(date);
+        }
+
+        refreshStatus(view, item);
 
         return view;
     }
@@ -86,6 +92,29 @@ public class TodoListAdapter extends BaseAdapter {
             }
         });
 
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                listener.onItemLongClick(v);
+                return true;
+            }
+        });
+
         return (view);
+    }
+
+    private void refreshStatus(View view, TodoItemInfo info) {
+        TextView status = (TextView)view.findViewById(R.id.todo_item_status);
+        String[] array = context.getResources().getStringArray(R.array.todo_status);
+
+        if (info.status == TodoItemInfo.Status.Ok) {
+            status.setTextColor(ContextCompat.getColor(context, R.color.green));
+        } else if (info.status == TodoItemInfo.Status.Expired) {
+            status.setTextColor(ContextCompat.getColor(context, R.color.red));
+        } else if (info.status == TodoItemInfo.Status.InProgress) {
+            status.setTextColor(ContextCompat.getColor(context, R.color.yellow));
+        }
+
+        status.setText(array[info.status.ordinal()]);
     }
 }

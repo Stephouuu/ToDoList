@@ -9,11 +9,17 @@ import android.os.Parcelable;
 
 public class TodoItemInfo implements Parcelable {
 
+    public enum Status {
+        InProgress,
+        Expired,
+        Ok
+    }
+
     public long id;
     public String title;
     public String content;
     public String dateTime;
-    //public String userFriendlyDateTime;
+    public Status status;
     public int year;
     public int month;
     public int day;
@@ -25,7 +31,7 @@ public class TodoItemInfo implements Parcelable {
         title = "Title";
         content = "Content";
         dateTime = "0000-00-00 00:00";
-        //userFriendlyDateTime = "1st Mar 2017";
+        status = Status.InProgress;
         year = 0;
         month = 0;
         day = 0;
@@ -44,7 +50,7 @@ public class TodoItemInfo implements Parcelable {
         out.writeString(title);
         out.writeString(content);
         out.writeString(dateTime);
-        //out.writeString(userFriendlyDateTime);
+        out.writeString(String.valueOf(status));
         out.writeInt(year);
         out.writeInt(month);
         out.writeInt(day);
@@ -70,7 +76,7 @@ public class TodoItemInfo implements Parcelable {
         title = in.readString();
         content = in.readString();
         dateTime = in.readString();
-        //userFriendlyDateTime = in.readString();
+        status = Status.valueOf(in.readString());
         year = in.readInt();
         month = in.readInt();
         day = in.readInt();

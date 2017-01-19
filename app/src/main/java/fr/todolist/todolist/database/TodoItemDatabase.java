@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -15,7 +17,7 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  * Created by Stephane on 16/01/2017.
  */
 
-public class TodoItemDatabase {
+public class TodoItemDatabase implements SearchInterface {
 
     private Context context;
 
@@ -69,6 +71,7 @@ public class TodoItemDatabase {
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
+        values.put(MySQLite.COL_STATUS, String.valueOf(item.status));
 
         item.id = database.insert(MySQLite.TABLE_NAME, null, values);
         return (item);
@@ -81,6 +84,7 @@ public class TodoItemDatabase {
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
+        values.put(MySQLite.COL_STATUS, String.valueOf(item.status));
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }
@@ -94,11 +98,41 @@ public class TodoItemDatabase {
         return (database.delete(MySQLite.TABLE_NAME, MySQLite.COL_ID + " = "  + id, null));
     }
 
-    public List<TodoItemInfo> getItemsOrderByDueDate() {
-        String request = "SELECT * FROM " + MySQLite.TABLE_NAME + " ORDER BY " + MySQLite.COL_DUE_DATE;
+    @Override
+    public List<TodoItemInfo> getItemsByDueDateASC() {
+        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " ORDER BY " + MySQLite.COL_DUE_DATE + ";"));
+    }
+
+    @Override
+    public List<TodoItemInfo> getItemsByDueDateDESC() {
+        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " ORDER BY " + MySQLite.COL_DUE_DATE + " DESC;"));
+    }
+
+    @Override
+    public List<TodoItemInfo> getItemsByTitle(String toSearch) {
+        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_TITLE + " LIKE '" + toSearch + "%'"));
+    }
+
+    @Override
+    public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
+        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_STATUS + " = '" + toSearch + "';"));
+    }
+
+    @Override
+    public List<TodoItemInfo> getItemsByContent(String toSearch) {
+        return getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_CONTENT + " LIKE '%" + toSearch + "%'");
+    }
+
+    @Nullable
+    public TodoItemInfo getItemByID(int id) {
+        List<TodoItemInfo> list = getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_ID + " ='" + id + "';");
+        return (list.get(0));
+    }
+
+    private List<TodoItemInfo> getResult(String query) {
         List<TodoItemInfo> results = new ArrayList<>();
 
-        Cursor cursor = database.rawQuery(request, null);
+        Cursor cursor = database.rawQuery(query, null);
 
         if (cursor.getCount() > 0)
         {
@@ -112,104 +146,6 @@ public class TodoItemDatabase {
         return (results);
     }
 
-    /*public List<TodoItemInfo> getElephantByName(String name) {
-        String request = "SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_NAME + " LIKE '" + name + "%'";
-        List<ElephantInfo> results = new ArrayList<>();
-
-        Cursor cursor = database.rawQuery(request, null);
-        //Cursor cursor = database.rawQuery(request, new String[] {name});
-
-        if (cursor.getCount() > 0)
-        {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                results.add(cursorToElephant(cursor));
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-
-        return (results);
-    }*/
-
-    /*public List<ElephantInfo> getElephant(String name, ElephantInfo.Gender sex) {
-        String request = "SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_NAME + " LIKE '" + name + "%'";
-        List<ElephantInfo> results = new ArrayList<>();
-
-        if (sex != ElephantInfo.Gender.UNKNOWN) {
-            request += " AND " + MySQLite.COL_SEX + " = '" + String.valueOf(sex) + "';";
-        } else {
-            request += ";";
-        }
-
-        Log.i("request", request);
-
-        Cursor cursor = database.rawQuery(request, null);
-
-        if (cursor.getCount() > 0)
-        {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                results.add(cursorToElephant(cursor));
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-
-        return (results);
-    }
-
-    //TODO: rename function
-    public List<ElephantInfo> getCustom(ElephantInfo info) {
-        String query = "SELECT * FROM " + MySQLite.TABLE_NAME + GetElephantQueryRestriction(info);
-        List<ElephantInfo> results = new ArrayList<>();
-        Log.i("request", query);
-        Cursor cursor = database.rawQuery(query, null);
-
-        if (cursor.getCount() > 0)
-        {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                results.add(cursorToElephant(cursor));
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-
-        return (results);
-    }*/
-
-    /*private String GetElephantQueryRestriction(ElephantInfo info) {
-        List<String> param = new ArrayList<String>();
-        String restriction = " ";
-
-        if (!info.name.isEmpty())
-            param.add("WHERE " + MySQLite.COL_NAME + " = '" + info.name + "'");
-        if (!info.chips1.isEmpty())
-            param.add("WHERE " + MySQLite.COL_CHIPS + " = '" + info.chips1 + "'");
-        if (info.sex != ElephantInfo.Gender.UNKNOWN)
-            param.add("WHERE " + MySQLite.COL_SEX + " = '" + info.sex + "'");
-        if (!info.registrationProvince.isEmpty())
-            param.add("WHERE " + MySQLite.COL_REGISTRATION_PROVINCE + " = '" + info.registrationProvince + "'");
-        if (!info.registrationDistrict.isEmpty())
-            param.add("WHERE " + MySQLite.COL_REGISTRATION_DISTRICT + " = '" + info.registrationDistrict + "'");
-        if (!info.registrationProvince.isEmpty())
-            param.add("WHERE " + MySQLite.COL_REGISTRATION_PROVINCE + " = '" + info.registrationProvince + "'");
-        if (!info.registrationVillage.isEmpty())
-            param.add("WHERE " + MySQLite.COL_REGISTRATION_VILLAGE + " = '" + info.registrationVillage + "'");
-
-        for (int i = 0;  i < param.size(); i++) {
-            if (i > 0)
-                param.set(i- 1,  param.get(i - 1) + " AND ");
-        }
-
-        for (int i = 0; i < param.size(); i++) {
-            restriction += param.get(i);
-        }
-
-        return restriction;
-    }*/
-
     /**
      * Récuperer les infos d'un cursor et les convertis en Elefant
      *
@@ -222,7 +158,7 @@ public class TodoItemDatabase {
         item.title = cursor.getString(MySQLite.NUM_COL_TITLE);
         item.content = cursor.getString(MySQLite.NUM_COL_CONTENT);
         item.dateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE);
-        //item.userFriendlyDateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE_USER);
+        item.status = TodoItemInfo.Status.valueOf(cursor.getString(MySQLite.NUM_COL_STATUS));
 
         DateTimeManager.retrieveDateTime(item, item.dateTime);
 
