@@ -22,6 +22,7 @@ import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.utils.Routes;
+import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class MainActivity extends AppCompatActivity implements SearchInterface, TodoListInterface {
@@ -137,14 +138,12 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     }
 
-    /*@Override
-    public List<TodoItemInfo> getTodoItemInformations() {
-        return (database.getItemsOrderByDueDate());
-    }*/
-
     private void refreshFragment() {
         TodoListFragment fragment = new TodoListFragment();
+        TodoItemFilter filter = new TodoItemFilter();
+        filter.expired = false;
         Bundle args = new Bundle();
+        args.putParcelable(TodoListFragment.EXTRA_FILTER, filter);
         fragment.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, fragment).commit();
     }

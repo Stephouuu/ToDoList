@@ -53,16 +53,6 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         notifyDataSetChanged();
     }
 
-    /*@Override
-    public int getCount() {
-        return (items.size());
-    }
-
-    @Override
-    public TodoItemInfo getItem(int index) {
-        return (items.get(index));
-    }*/
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_ITEM) {
@@ -95,9 +85,9 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             ((TodoListRecyclerItemViewHolder)holder).refreshView(item);
             ((TodoListRecyclerItemViewHolder)holder).refreshTitle(item.title);
-            ((TodoListRecyclerItemViewHolder)holder).refreshContent(item.content);
+            //((TodoListRecyclerItemViewHolder)holder).refreshContent(item.content);
             ((TodoListRecyclerItemViewHolder)holder).refreshDate(item);
-            ((TodoListRecyclerItemViewHolder)holder).refreshStatus(item);
+            //((TodoListRecyclerItemViewHolder)holder).refreshStatus(item);
 
             if (position == 0 && position == getBasicItemCount() - 1) {
                 ((TodoListRecyclerItemViewHolder)holder).rounded_border_top_bottom();
@@ -136,74 +126,4 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private boolean isHeader(int position) {
         return (position == 0 && header);
     }
-
-    /*@Override
-    public View getView(final int index, View old, ViewGroup parent) {
-        TodoItemInfo item = getItem(index);
-
-        View view = refreshView(index, old, parent, item);
-        String date = DateTimeManager.getUserFriendlyDateTime(context, item.dateTime, item.year,
-                item.month, item.day, item.hour, item.minute);
-
-        ((TextView)view.findViewById(R.id.todo_item_title)).setText(item.title);
-        ((TextView)view.findViewById(R.id.todo_item_content)).setText(item.content);
-
-        if (item.status == TodoItemInfo.Status.InProgress) {
-            ((TextView) view.findViewById(R.id.todo_item_datetime)).setText(date);
-        }
-
-        refreshStatus(view, item);
-
-        return view;
-    }*/
-
-    /*private View refreshView(int index, View old, ViewGroup parent, final TodoItemInfo item) {
-        View view;
-
-        if (old != null) {
-            view = old;
-        } else {
-            view = LayoutInflater.from(context).inflate(R.layout.todo_list_item, parent, false);
-        }
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(item);
-            }
-        });
-
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                listener.onItemLongClick(v);
-                return true;
-            }
-        });
-
-        if (items.size() == 1) {
-            view.setBackgroundResource(R.drawable.rounded_border_top_bottom);
-        } else if (index == 0) {
-            view.setBackgroundResource(R.drawable.rounded_border_top);
-        } else if (index == items.size() - 1) {
-            view.setBackgroundResource(R.drawable.rounded_border_bottom);
-        }
-
-        return (view);
-    }
-
-    private void refreshStatus(View view, TodoItemInfo info) {
-        TextView status = (TextView)view.findViewById(R.id.todo_item_status);
-        String[] array = context.getResources().getStringArray(R.array.todo_status);
-
-        if (info.status == TodoItemInfo.Status.Ok) {
-            status.setTextColor(ContextCompat.getColor(context, R.color.green));
-        } else if (info.status == TodoItemInfo.Status.Expired) {
-            status.setTextColor(ContextCompat.getColor(context, R.color.red));
-        } else if (info.status == TodoItemInfo.Status.InProgress) {
-            status.setTextColor(ContextCompat.getColor(context, R.color.yellow));
-        }
-
-        status.setText(array[info.status.ordinal()]);
-    }*/
 }

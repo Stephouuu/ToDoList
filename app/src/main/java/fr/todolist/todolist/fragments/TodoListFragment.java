@@ -1,5 +1,6 @@
 package fr.todolist.todolist.fragments;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,12 +21,15 @@ import fr.todolist.todolist.activities.MainActivity;
 import fr.todolist.todolist.adapters.TodoListRecyclerAdapter;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.StaticTools;
+import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListFragment extends Fragment {
 
     public static final String EXTRA_MODE = "todolist.mode";
     public static final String EXTRA_SEARCH = "todolist.search.param";
+    public static final String EXTRA_FILTER = "todolist.filter";
 
     public enum Mode {
         DueDateASC,
@@ -33,11 +39,11 @@ public class TodoListFragment extends Fragment {
         Content
     }
 
-    //private ListView list;
-    //private TodoListAdapter adapter;
     private RecyclerView recyclerView;
     private TodoListRecyclerAdapter adapter;
-    private TextView noItemTextView;
+    private LinearLayout noItemParent;
+    private ImageView noItemDrawable;
+    private TodoItemFilter filter;
     private Mode mode;
     private String searchParameter;
     private boolean retractableToolbar;
@@ -50,34 +56,22 @@ public class TodoListFragment extends Fragment {
         super.onCreate(state);
         Bundle args = getArguments();
         if (args != null) {
+            filter = args.getParcelable(EXTRA_FILTER);
             mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDateASC)));
             searchParameter = args.getString(EXTRA_SEARCH);
         } else {
             mode = Mode.DueDateASC;
         }
-        Log.i("mode onCreate", "" + mode);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.todo_list_fragment, container, false);
 
-        //list = (ListView)view.findViewById(R.id.todo_fragment_list);
         recyclerView = (RecyclerView)view.findViewById(R.id.todo_recyclerview);
-        noItemTextView = (TextView)view.findViewById(R.id.todo_fragment_noitem);
+        noItemParent = (LinearLayout)view.findViewById(R.id.todo_fragment_parent_noitem);
+        noItemDrawable = (ImageView)view.findViewById(R.id.check_list);
 
-        /*adapter = new TodoListAdapter(getContext(), new TodoListInterface() {
-            @Override
-            public void onItemClick(TodoItemInfo item) {
-                ((TodoListInterface) getActivity()).onItemClick(item);
-            }
-
-            @Override
-            public void onItemLongClick(View view) {
-                ((TodoListInterface) getActivity()).onItemLongClick(view);
-            }
-        });
-        list.setAdapter(adapter);*/
         retractableToolbar = getActivity() instanceof MainActivity;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new TodoListRecyclerAdapter(getActivity(), retractableToolbar, new TodoListInterface() {
@@ -93,6 +87,10 @@ public class TodoListFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
+        if (!retractableToolbar) {
+            noItemParent.setVisibility(View.GONE);
+        }
+
         return (view);
     }
 
@@ -100,9 +98,7 @@ public class TodoListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         refreshList();
-        if (mode != Mode.DueDateASC) {
-            noItemTextView.setVisibility(View.GONE);
-        }
+
     }
 
     public void setSearchParameter(String parameter) {
@@ -111,11 +107,14 @@ public class TodoListFragment extends Fragment {
 
     public void refreshList() {
         List<TodoItemInfo> list = getListItem();
+        if (filter != null) {
+            list = StaticTools.applyFilter(list, filter);
+        }
         if (list != null) {
             if (list.isEmpty()) {
-                noItemTextView.setVisibility(View.VISIBLE);
+                noItemParent.setVisibility(View.VISIBLE);
             } else {
-                noItemTextView.setVisibility(View.GONE);
+                noItemParent.setVisibility(View.GONE);
             }
             adapter.clear();
             adapter.addList(list);

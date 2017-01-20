@@ -8,31 +8,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--<ListView
-            android:id="@+id/todo_fragment_list"
-            android:layout_marginRight="8.4dp"
-            android:layout_marginLeft="8.4dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>-->
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/todo_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/background" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/todo_fragment_parent_noitem"
             android:visibility="gone"
-            android:text="@string/empty"
-            android:textColor="@color/grey_light_100"
-            android:textSize="26sp"
-            android:id="@+id/todo_fragment_noitem"
             android:layout_gravity="center"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/check_list"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@null"
+                android:src="@drawable/check_list"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="@string/no_item"
+                android:textColor="@color/grey_light_100"
+                android:textSize="16sp"
+                android:id="@+id/todo_fragment_noitem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </FrameLayout>
-
-
 
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package fr.todolist.todolist.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +34,8 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private EditText contentEditText;
     private EditText dateEditText;
     private EditText timeEditText;
-    private Button addButton;
+    private FloatingActionButton addFab;
+    //private Button addButton;
 
     private TodoItemDatabase database;
     private TodoItemInfo info;
@@ -58,10 +60,13 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         contentEditText = (EditText)findViewById(R.id.add_item_content);
         dateEditText = (EditText)findViewById(R.id.add_item_date);
         timeEditText = (EditText)findViewById(R.id.add_item_time);
-        addButton = (Button)findViewById(R.id.add_item_button);
+        addFab = (FloatingActionButton)findViewById(R.id.add_item);
+        //addButton = (Button)findViewById(R.id.add_item_button);
         root = findViewById(R.id.add_todo_item_root);
 
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        StaticTools.showKeyboard(getApplicationContext());
+
+        /*root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 if (StaticTools.keyboardIsDisplay(root)) {
@@ -80,9 +85,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                     }, 100);
                 }
             }
-        });
+        });*/
 
-        addButton.setOnClickListener(new View.OnClickListener() {
+        addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onValid();
@@ -165,6 +170,12 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         return true;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        StaticTools.hideKeyboard(getApplicationContext(), root);
+    }
+
     private boolean confirm() {
         return (confirmTitle() && confirmContent() && confirmDate()
                 && confirmTime());
@@ -216,9 +227,18 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
     @Override
     public void onTimeSet(int hour, int minutes) {
-        timeEditText.setText(String.format(getString(R.string.format_time), hour, minutes));
         info.hour = hour;
         info.minute = minutes;
+        String suffixe;
+        if (hour > 11) {
+            suffixe = " PM";
+            if (hour > 12) {
+                hour = hour % 12;
+            }
+        } else {
+            suffixe = " AM";
+        }
+        timeEditText.setText(String.format(getString(R.string.format_time), hour, minutes, suffixe));
     }
 
     @Override

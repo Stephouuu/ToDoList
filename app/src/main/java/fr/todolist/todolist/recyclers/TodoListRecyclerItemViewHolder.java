@@ -55,20 +55,30 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         ((TextView)parent.findViewById(R.id.todo_item_title)).setText(title);
     }
 
-    public void refreshContent(String content) {
+    /*public void refreshContent(String content) {
         ((TextView)parent.findViewById(R.id.todo_item_content)).setText(content);
-    }
+    }*/
 
     public void refreshDate(TodoItemInfo item) {
+        TextView dateTextView = (TextView)parent.findViewById(R.id.todo_item_datetime);
         String date = DateTimeManager.getUserFriendlyDateTime(activity, item.dateTime, item.year,
                 item.month, item.day, item.hour, item.minute);
 
         if (item.status == TodoItemInfo.Status.InProgress) {
-            ((TextView)parent.findViewById(R.id.todo_item_datetime)).setText(date);
+            dateTextView.setText(date);
+        } else {
+            String[] array = activity.getResources().getStringArray(R.array.todo_status);
+
+            if (item.status == TodoItemInfo.Status.Ok) {
+                dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.green));
+            } else if (item.status == TodoItemInfo.Status.Expired) {
+                dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
+            }
+            dateTextView.setText(array[item.status.ordinal()]);
         }
     }
 
-    public void refreshStatus(TodoItemInfo item) {
+    /*public void refreshStatus(TodoItemInfo item) {
         TextView status = (TextView)parent.findViewById(R.id.todo_item_status);
         String[] array = activity.getResources().getStringArray(R.array.todo_status);
 
@@ -81,7 +91,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         }
 
         status.setText(array[item.status.ordinal()]);
-    }
+    }*/
 
     public void rounded_border_top_bottom() {
         parent.findViewById(R.id.todo_preview_parent).setBackgroundResource(R.drawable.rounded_border_top_bottom);
