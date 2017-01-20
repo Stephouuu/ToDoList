@@ -2,6 +2,7 @@ package fr.todolist.todolist.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -44,5 +45,17 @@ public class StaticTools {
         DisplayMetrics metrics = ctx.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
+
+    /*public static float convertDpToPixel(float dp, Context context){
+        float px = 0.0f;
+        try {
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            px = dp * (metrics.densityDpi / 160f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return px;
+    }*/
 
 }

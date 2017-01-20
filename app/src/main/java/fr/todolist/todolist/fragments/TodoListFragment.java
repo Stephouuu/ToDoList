@@ -3,17 +3,19 @@ package fr.todolist.todolist.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import fr.todolist.todolist.R;
-import fr.todolist.todolist.adapters.TodoListAdapter;
+import fr.todolist.todolist.activities.MainActivity;
+import fr.todolist.todolist.adapters.TodoListRecyclerAdapter;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.utils.TodoItemInfo;
@@ -31,11 +33,14 @@ public class TodoListFragment extends Fragment {
         Content
     }
 
-    private ListView list;
-    private TodoListAdapter adapter;
+    //private ListView list;
+    //private TodoListAdapter adapter;
+    private RecyclerView recyclerView;
+    private TodoListRecyclerAdapter adapter;
     private TextView noItemTextView;
     private Mode mode;
     private String searchParameter;
+    private boolean retractableToolbar;
 
     public TodoListFragment() {
     }
@@ -57,12 +62,11 @@ public class TodoListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.todo_list_fragment, container, false);
 
-        Log.i("todolist", "mode: " + String.valueOf(mode));
-
-        list = (ListView)view.findViewById(R.id.todo_fragment_list);
+        //list = (ListView)view.findViewById(R.id.todo_fragment_list);
+        recyclerView = (RecyclerView)view.findViewById(R.id.todo_recyclerview);
         noItemTextView = (TextView)view.findViewById(R.id.todo_fragment_noitem);
 
-        adapter = new TodoListAdapter(getContext(), new TodoListInterface() {
+        /*adapter = new TodoListAdapter(getContext(), new TodoListInterface() {
             @Override
             public void onItemClick(TodoItemInfo item) {
                 ((TodoListInterface) getActivity()).onItemClick(item);
@@ -73,9 +77,21 @@ public class TodoListFragment extends Fragment {
                 ((TodoListInterface) getActivity()).onItemLongClick(view);
             }
         });
-        list.setAdapter(adapter);
+        list.setAdapter(adapter);*/
+        retractableToolbar = getActivity() instanceof MainActivity;
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter = new TodoListRecyclerAdapter(getActivity(), retractableToolbar, new TodoListInterface() {
+            @Override
+            public void onItemClick(TodoItemInfo item) {
+                ((TodoListInterface) getActivity()).onItemClick(item);
+            }
 
-
+            @Override
+            public void onItemLongClick(View view) {
+                ((TodoListInterface) getActivity()).onItemLongClick(view);
+            }
+        });
+        recyclerView.setAdapter(adapter);
 
         return (view);
     }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">DoIt</string>
 
-    <string name="home_page">Home Page</string>
+    <string name="home_page">To Do</string>
     <string name="search">Search</string>
 
     <string name="open">Open</string>

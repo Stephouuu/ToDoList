@@ -16,6 +16,7 @@
 
     <color name="background_100">#FFFAFAFA</color>
     <color name="background_60">#99FAFAFA</color>
+    <color name="background">#F0F0F0</color>
 
     <color name="green">#009900</color>
     <color name="yellow">#CECE00</color>
