@@ -26,6 +26,7 @@ import fr.todolist.todolist.database.TodoItemDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class SearchActivity extends AppCompatActivity implements SearchInterface, TodoListInterface {
@@ -44,6 +45,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TodoItemDatabase database;
+    private TodoItemFilter filter;
 
     private TodoListFragment searchTitleFragment;
     private TodoListFragment searchContentFragment;
@@ -56,6 +58,9 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
 
         database = new TodoItemDatabase(getApplicationContext());
         database.open();
+
+        filter = new TodoItemFilter();
+        filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK | TodoItemFilter.STATUS_EXPIRED);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -118,12 +123,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
 
                     searchTitleFragment.refreshList();
                     searchContentFragment.refreshList();
-                    /*requestNumMedCase();
-                    requestNumUser();
-                    if (selection == SELECTION_POSTS)
-                        setCaseListFragment();
-                    else
-                        setUserListFragment();*/
+
                     View view = getCurrentFocus();
                     if (view != null) {
                         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -147,13 +147,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 String search = getSearch(getIntent());
                 if (search != null && !search.isEmpty() && search.length() > 2) {
-                    /*requestNumMedCase();
-                    requestNumUser();
-                    setSearch(getIntent(), null);
-                    if (selection == SELECTION_POSTS)
-                        setCaseListFragment();
-                    else
-                        setUserListFragment();*/
+
                 }
                 return true;
             }
@@ -202,6 +196,11 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     @Override
     public void onItemLongClick(View view) {
 
+    }
+
+    @Override
+    public TodoItemFilter getFilter() {
+        return (filter);
     }
 
     @Override

@@ -2,8 +2,8 @@ package fr.todolist.todolist.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -59,10 +59,13 @@ public class StaticTools {
 
     public static List<TodoItemInfo> applyFilter(List<TodoItemInfo> list, TodoItemFilter filter) {
         List<TodoItemInfo> result = new ArrayList<>();
-        boolean predicate = false;
+        boolean predicate;
+
         for (TodoItemInfo item : list) {
-            predicate = !filter.expired && item.status == TodoItemInfo.Status.Expired;
-            if (!predicate) {
+            //predicate = (!filter.hasFlags(TodoItemFilter.STATUS_EXPIRED) && item.status == TodoItemInfo.Status.Expired);
+            Log.i("filter", item.title + ": " + item.status.toString());
+            predicate = filter.hasFlags(item.status.getValue());
+            if (predicate) {
                 result.add(item);
             }
         }

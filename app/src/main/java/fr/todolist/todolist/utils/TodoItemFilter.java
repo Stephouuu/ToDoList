@@ -9,10 +9,16 @@ import android.os.Parcelable;
 
 public class TodoItemFilter implements Parcelable {
 
-    public boolean expired;
+    public static final int STATUS_TODO = 1;
+    public static final int STATUS_OK = 2;
+    public static final int STATUS_EXPIRED = 4;
+
+    //public boolean expired;
+    public int status;
 
     public TodoItemFilter() {
-        expired = true;
+        //expired = true;
+        status = 0;
     }
 
     @Override
@@ -22,7 +28,7 @@ public class TodoItemFilter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(expired?1:0);
+        out.writeInt(status);
     }
 
     public static final Parcelable.Creator<TodoItemFilter> CREATOR = new Parcelable.Creator<TodoItemFilter>() {
@@ -39,6 +45,23 @@ public class TodoItemFilter implements Parcelable {
     };
 
     private TodoItemFilter(Parcel in) {
-        expired = in.readInt() == 1;
+        status = in.readInt();
+    }
+
+    public void setFlags(int flags) {
+        status = 0;
+        status = flags;
+    }
+
+    public void addFlags(int flags) {
+        status |= flags;
+    }
+
+    public void deleteFlags(int flags) {
+        status = (status ^ flags);
+    }
+
+    public boolean hasFlags(int flags) {
+        return (status & flags) != 0;
     }
 }

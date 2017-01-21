@@ -11,6 +11,7 @@ import java.util.List;
 
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.utils.DateTimeManager;
+import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -71,7 +72,7 @@ public class TodoItemDatabase implements SearchInterface {
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
-        values.put(MySQLite.COL_STATUS, String.valueOf(item.status));
+        values.put(MySQLite.COL_FLAG_STATUS, item.status.getValue());
 
         item.id = database.insert(MySQLite.TABLE_NAME, null, values);
         return (item);
@@ -84,7 +85,7 @@ public class TodoItemDatabase implements SearchInterface {
         values.put(MySQLite.COL_TITLE, item.title);
         values.put(MySQLite.COL_CONTENT, item.content);
         values.put(MySQLite.COL_DUE_DATE, item.dateTime);
-        values.put(MySQLite.COL_STATUS, String.valueOf(item.status));
+        values.put(MySQLite.COL_FLAG_STATUS, item.status.getValue());
 
         return (database.update(MySQLite.TABLE_NAME, values, MySQLite.COL_ID + " = " + item.id, null));
     }
@@ -96,6 +97,11 @@ public class TodoItemDatabase implements SearchInterface {
      */
     public int deleteItem(int id) {
         return (database.delete(MySQLite.TABLE_NAME, MySQLite.COL_ID + " = "  + id, null));
+    }
+
+    @Override
+    public TodoItemFilter getFilter() {
+        return null;
     }
 
     @Override
@@ -115,7 +121,7 @@ public class TodoItemDatabase implements SearchInterface {
 
     @Override
     public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
-        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_STATUS + " = '" + toSearch + "';"));
+        return (getResult("SELECT * FROM " + MySQLite.TABLE_NAME + " WHERE " + MySQLite.COL_FLAG_STATUS + " = " + toSearch.getValue() + ";"));
     }
 
     @Override
@@ -158,7 +164,15 @@ public class TodoItemDatabase implements SearchInterface {
         item.title = cursor.getString(MySQLite.NUM_COL_TITLE);
         item.content = cursor.getString(MySQLite.NUM_COL_CONTENT);
         item.dateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE);
-        item.status = TodoItemInfo.Status.valueOf(cursor.getString(MySQLite.NUM_COL_STATUS));
+
+        int status = cursor.getInt(MySQLite.NUM_COL_FLAG_STATUS);
+        if (status == TodoItemInfo.Status.TODO.getValue()) {
+            item.status = TodoItemInfo.Status.TODO;
+        } else if (status == TodoItemInfo.Status.Ok.getValue()) {
+            item.status = TodoItemInfo.Status.Ok;
+        } else if (status == TodoItemInfo.Status.Expired.getValue()) {
+            item.status = TodoItemInfo.Status.Expired;
+        }
 
         DateTimeManager.retrieveDateTime(item, item.dateTime);
 

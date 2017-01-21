@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -64,17 +63,15 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         String date = DateTimeManager.getUserFriendlyDateTime(activity, item.dateTime, item.year,
                 item.month, item.day, item.hour, item.minute);
 
-        if (item.status == TodoItemInfo.Status.InProgress) {
+        if (item.status == TodoItemInfo.Status.TODO) {
             dateTextView.setText(date);
         } else {
-            String[] array = activity.getResources().getStringArray(R.array.todo_status);
-
             if (item.status == TodoItemInfo.Status.Ok) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.green));
             } else if (item.status == TodoItemInfo.Status.Expired) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
             }
-            dateTextView.setText(array[item.status.ordinal()]);
+            dateTextView.setText(item.status.toString());
         }
     }
 

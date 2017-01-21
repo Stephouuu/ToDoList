@@ -1,18 +1,15 @@
 package fr.todolist.todolist.fragments;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -29,7 +26,7 @@ public class TodoListFragment extends Fragment {
 
     public static final String EXTRA_MODE = "todolist.mode";
     public static final String EXTRA_SEARCH = "todolist.search.param";
-    public static final String EXTRA_FILTER = "todolist.filter";
+    //public static final String EXTRA_FILTER = "todolist.filter";
 
     public enum Mode {
         DueDateASC,
@@ -43,7 +40,7 @@ public class TodoListFragment extends Fragment {
     private TodoListRecyclerAdapter adapter;
     private LinearLayout noItemParent;
     private ImageView noItemDrawable;
-    private TodoItemFilter filter;
+    //private TodoItemFilter filter;
     private Mode mode;
     private String searchParameter;
     private boolean retractableToolbar;
@@ -56,7 +53,7 @@ public class TodoListFragment extends Fragment {
         super.onCreate(state);
         Bundle args = getArguments();
         if (args != null) {
-            filter = args.getParcelable(EXTRA_FILTER);
+            //filter = args.getParcelable(EXTRA_FILTER);
             mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDateASC)));
             searchParameter = args.getString(EXTRA_SEARCH);
         } else {
@@ -98,7 +95,6 @@ public class TodoListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         refreshList();
-
     }
 
     public void setSearchParameter(String parameter) {
@@ -107,6 +103,7 @@ public class TodoListFragment extends Fragment {
 
     public void refreshList() {
         List<TodoItemInfo> list = getListItem();
+        TodoItemFilter filter = ((SearchInterface)getActivity()).getFilter();
         if (filter != null) {
             list = StaticTools.applyFilter(list, filter);
         }

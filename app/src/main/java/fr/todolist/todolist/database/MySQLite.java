@@ -21,15 +21,15 @@ public class MySQLite extends SQLiteOpenHelper {
     public static final String COL_DUE_DATE = "due_date";
     public static final int NUM_COL_DUE_DATE = 3;
 
-    public static final String COL_STATUS = "status";
-    public static final int NUM_COL_STATUS = 4;
+    public static final String COL_FLAG_STATUS = "status";
+    public static final int NUM_COL_FLAG_STATUS = 4;
 
     private static final String TABLE = "CREATE TABLE " + TABLE_NAME + " ("
             + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COL_TITLE + " TEXT NOT NULL, "
             + COL_CONTENT + " TEXT NOT NULL, "
             + COL_DUE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-            + COL_STATUS + " TEXT NOT NULL);";
+            + COL_FLAG_STATUS + " INTEGER DEFAULT 0);";
 
     /**
      * @param context Le contexte

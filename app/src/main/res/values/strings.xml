@@ -32,12 +32,6 @@
     <string name="date_transform_hours">%d hours</string>
     <string name="date_transform_days">%d days</string>
 
-    <string-array name="todo_status">
-        <item>In Progress</item>
-        <item>Expired</item>
-        <item>OK</item>
-    </string-array>
-
     <string name="error_search_at_leat_three_character">Research must contains 1 characters at least</string>
 
     <string name="search_by_title">Title</string>
@@ -45,5 +39,8 @@
     <string name="search_by_status">Status</string>
 
     <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
+
+    <string name="Parameter">Parameter</string>
+    <string name="filter">Filter</string>
 
 </resources>
