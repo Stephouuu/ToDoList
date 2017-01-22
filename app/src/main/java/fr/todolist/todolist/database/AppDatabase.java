@@ -74,6 +74,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_CONTENT, item.content);
         values.put(MySQLite.TODO_COL_DUE_DATE, item.dateTime);
         values.put(MySQLite.TODO_COL_FLAG_STATUS, item.status.getValue());
+        values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
 
         item.id = database.insert(MySQLite.TODO_TABLE_NAME, null, values);
         return (item);
@@ -97,6 +98,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_CONTENT, item.content);
         values.put(MySQLite.TODO_COL_DUE_DATE, item.dateTime);
         values.put(MySQLite.TODO_COL_FLAG_STATUS, item.status.getValue());
+        values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
 
         return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + item.id, null));
     }
@@ -119,19 +121,17 @@ public class AppDatabase implements SearchInterface {
 
     public AlertInfo getAlertInfoByItemID(int id) {
         List<AlertInfo> result = getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME + " WHERE " + MySQLite.ALARM_COL_ID_ITEM + " = " + id + ";");
-        return result.get(0);
+        if (result.size() > 0) {
+            return result.get(0);
+        }
+        return (null);
     }
 
     public List<AlertInfo> getAlerts() {
         return (getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME));
     }
 
-    /**
-     * Supprime un éléphant de la base de donnée
-     * @param id L'ID de l'éléphant à supprimer
-     * @return Code d'erreur
-     */
-    public int deleteItem(int id) {
+    public int deleteItem(long id) {
         return (database.delete(MySQLite.TODO_TABLE_NAME, MySQLite.TODO_COL_ID + " = "  + id, null));
     }
 
@@ -206,10 +206,10 @@ public class AppDatabase implements SearchInterface {
     }
 
     /**
-     * Récuperer les infos d'un cursor et les convertis en Elefant
+     * Récuperer les infos d'un cursor et les convertis en TodoItemInfo
      *
      * @param cursor Le curseur
-     * @return L'éléphant
+     * @return L'item
      */
     private TodoItemInfo cursorToTodoItemInfo(Cursor cursor) {
         TodoItemInfo item = new TodoItemInfo();
@@ -223,11 +223,13 @@ public class AppDatabase implements SearchInterface {
             item.status = TodoItemInfo.Status.ToDo;
         } else if (status == TodoItemInfo.Status.Done.getValue()) {
             item.status = TodoItemInfo.Status.Done;
-        } else if (status == TodoItemInfo.Status.Expired.getValue()) {
-            item.status = TodoItemInfo.Status.Expired;
+        } else if (status == TodoItemInfo.Status.Overdue.getValue()) {
+            item.status = TodoItemInfo.Status.Overdue;
         }
 
-        DateTimeManager.retrieveDateTime(item, item.dateTime);
+        item = DateTimeManager.retrieveDateTime(item, item.dateTime);
+
+        item.remind = cursor.getInt(MySQLite.TODO_NUM_COL_REMIND) == 1;
 
         return (item);
     }

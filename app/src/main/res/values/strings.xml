@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DoIt</string>
+    <string name="app_name">Do It Faggot</string>
 
     <string name="home_page">To Do</string>
     <string name="search">Search</string>
@@ -19,9 +19,10 @@
     <string name="time">Time</string>
 
     <string name="format_date">%1$04d-%2$02d-%3$02d</string>
+    <string name="format_date_usr">%1$02d %2$s, %3$d</string>
     <string name="format_time">%1$02d:%2$02d%3$s</string>
 
-    <string name="alert_title">Expired: %s</string>
+    <string name="alert_title">Overdue: %s</string>
     <string name="title_activity_consultation">ConsultationActivity</string>
 
     <string name="date_time">%1$s %2$s %3$s</string>
@@ -45,7 +46,8 @@
 
     <string name="inProgress">In Progress</string>
     <string name="done">Done</string>
-    <string name="expired">Expired</string>
+    <string name="expired">Overdue</string>
     <string name="datetime_separator">\@</string>
+    <string name="remind_me">Remind Me</string>
 
 </resources>

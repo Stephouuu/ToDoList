@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.receivers.AlarmReceiver;
 import fr.todolist.todolist.utils.Preferences;
 import fr.todolist.todolist.utils.Routes;
 import fr.todolist.todolist.utils.TodoItemFilter;
@@ -32,9 +34,13 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     private static final int REQUEST_ADD_ITEM = 1;
 
     private FloatingActionButton addFab;
+    private FloatingActionButton delFab;
     private AppDatabase database;
     private TodoItemFilter filter;
     private TodoListFragment todoListFragment;
+
+    private LongSparseArray<TodoItemInfo> selected;
+    private Mode mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,38 +53,36 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         filter = Preferences.getHomePageFilter(getApplicationContext());
         if (filter == null) {
             filter = new TodoItemFilter();
-            filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK);
+            filter.setFlags(TodoItemFilter.STATUS_TODO);
         }
 
         Routes.Load(getIntent().getData());
+
+        selected = new LongSparseArray<>();
+        mode = Mode.Normal;
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         addFab = (FloatingActionButton)findViewById(R.id.main_add_fab);
-
-        /*drawer = (DrawerLayout)findViewById(R.id.main_drawer);
-        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open, R.string.close);
-        toggle.setDrawerIndicatorEnabled(false);
-        toggle.setHomeAsUpIndicator(R.mipmap.hamburger);
-        toggle.syncState();
-
-        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DrawerLayout drawer = (DrawerLayout)findViewById(R.id.main_drawer);
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else {
-                    drawer.openDrawer(GravityCompat.START);
-                }
-            }
-        });*/
-
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addItem();
+            }
+        });
+
+        delFab = (FloatingActionButton)findViewById(R.id.main_del_fab);
+        delFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0 ; i < selected.size() ; ++i) {
+                    TodoItemInfo item = selected.get(selected.keyAt(i));
+                    database.deleteItem(item.id);
+                    AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
+                    updateMode(Mode.Normal);
+                    refreshFragment();
+                }
             }
         });
 
@@ -145,7 +149,34 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     @Override
     public void onItemLongClick(View view) {
+        updateMode(Mode.Selection);
+    }
 
+    @Override
+    public void addSelection(TodoItemInfo item) {
+        selected.put(item.id, item);
+    }
+
+    @Override
+    public void deleteSelection(TodoItemInfo item) {
+        selected.delete(item.id);
+    }
+
+    @Override
+    public boolean isInSelectionMode() {
+        return (mode == Mode.Selection);
+    }
+
+    private void updateMode(Mode mode) {
+        this.mode = mode;
+        if (mode == Mode.Normal) {
+            delFab.setVisibility(View.GONE);
+            addFab.setVisibility(View.VISIBLE);
+        }
+        else if (mode == Mode.Selection) {
+            addFab.setVisibility(View.GONE);
+            delFab.setVisibility(View.VISIBLE);
+        }
     }
 
     private void createFilterDialogBox() {
@@ -222,14 +253,8 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     private void refreshFragment() {
         if (todoListFragment == null) {
             todoListFragment = new TodoListFragment();
-            //TodoItemFilter filter = new TodoItemFilter();
-            //filter.expired = false;
-            //filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK);
             Bundle args = new Bundle();
             todoListFragment.setArguments(args);
-            //args.putParcelable(TodoListFragment.EXTRA_FILTER, filter);
-            todoListFragment.setArguments(args);
-
             getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, todoListFragment).commit();
         } else {
             todoListFragment.onResume();

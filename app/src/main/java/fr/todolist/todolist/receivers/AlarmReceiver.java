@@ -48,29 +48,30 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     private void alarm(Context context, TodoItemInfo item, String title, String content) {
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
-                .setSmallIcon(R.drawable.todo_icon)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setTicker(content);
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setData(Uri.parse("doit://consultation/" + item.id));
-
-        item.status = TodoItemInfo.Status.Expired;
-
+        item.status = TodoItemInfo.Status.Overdue;
         AppDatabase database = new AppDatabase(context);
         database.open();
         database.updateItem(item);
 
-        builder.setContentIntent(PendingIntent.getActivity(context, id.get(), intent, PendingIntent.FLAG_ONE_SHOT));
-        Notification notification = builder.build();
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        manager.notify(id.incrementAndGet(), notification);
+        if (item.remind) {
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
+                    .setSmallIcon(R.drawable.todo_icon)
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setTicker(content);
+
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.setData(Uri.parse("doit://consultation/" + item.id));
+
+            builder.setContentIntent(PendingIntent.getActivity(context, id.get(), intent, PendingIntent.FLAG_ONE_SHOT));
+            Notification notification = builder.build();
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            manager.notify(id.incrementAndGet(), notification);
+        }
     }
 
     public static void addAlarm(Context context, TodoItemInfo item, long ms) {
@@ -78,7 +79,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         alert.idTodoItem = (int)item.id;
         alert.title = item.title;
         alert.content = item.content;
-        //alert.time = ms;
 
         AppDatabase database = new AppDatabase(context);
         database.open();
@@ -96,18 +96,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         AppDatabase database = new AppDatabase(context);
         database.open();
 
-        /*Log.i("alert", "idItem: " + idItem);
-        List<AlertInfo> alerts = database.getAlerts();
-        for (AlertInfo alert : alerts) {
-            Log.i("alert", "idTodoItem: " + alert.idTodoItem);
-        }*/
-
         AlertInfo alert = database.getAlertInfoByItemID(idItem);
-        database.deleteAlert(alert.id);
+        if (alert != null) {
+            database.deleteAlert(alert.id);
 
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
-        alarmManager.cancel(pIntent);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
+            alarmManager.cancel(pIntent);
+        }
     }
 }

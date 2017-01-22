@@ -26,7 +26,6 @@ public class TodoListFragment extends Fragment {
 
     public static final String EXTRA_MODE = "todolist.mode";
     public static final String EXTRA_SEARCH = "todolist.search.param";
-    //public static final String EXTRA_FILTER = "todolist.filter";
 
     public enum Mode {
         DueDateASC,
@@ -80,6 +79,24 @@ public class TodoListFragment extends Fragment {
             @Override
             public void onItemLongClick(View view) {
                 ((TodoListInterface) getActivity()).onItemLongClick(view);
+                if (((TodoListInterface) getActivity()).isInSelectionMode()) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void addSelection(TodoItemInfo item) {
+                ((TodoListInterface) getActivity()).addSelection(item);
+            }
+
+            @Override
+            public void deleteSelection(TodoItemInfo item) {
+                ((TodoListInterface) getActivity()).deleteSelection(item);
+            }
+
+            @Override
+            public boolean isInSelectionMode() {
+                return ((TodoListInterface) getActivity()).isInSelectionMode();
             }
         });
         recyclerView.setAdapter(adapter);

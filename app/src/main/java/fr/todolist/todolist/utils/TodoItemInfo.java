@@ -12,7 +12,7 @@ public class TodoItemInfo implements Parcelable {
     public enum Status {
         ToDo(1),
         Done(2),
-        Expired(4);
+        Overdue(4);
 
         private int value;
 
@@ -30,6 +30,7 @@ public class TodoItemInfo implements Parcelable {
     public String content;
     public String dateTime;
     public Status status;
+    public boolean remind;
     public int year;
     public int month;
     public int day;
@@ -42,6 +43,7 @@ public class TodoItemInfo implements Parcelable {
         content = "Content";
         dateTime = "0000-00-00 00:00";
         status = Status.ToDo;
+        remind = false;
         year = 0;
         month = 0;
         day = 0;
@@ -61,6 +63,7 @@ public class TodoItemInfo implements Parcelable {
         out.writeString(content);
         out.writeString(dateTime);
         out.writeString(String.valueOf(status));
+        out.writeInt(remind?1:0);
         out.writeInt(year);
         out.writeInt(month);
         out.writeInt(day);
@@ -87,6 +90,7 @@ public class TodoItemInfo implements Parcelable {
         content = in.readString();
         dateTime = in.readString();
         status = Status.valueOf(in.readString());
+        remind = in.readInt() == 1;
         year = in.readInt();
         month = in.readInt();
         day = in.readInt();

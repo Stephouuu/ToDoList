@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import fr.todolist.todolist.R;
@@ -34,10 +36,28 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void refreshView(final TodoItemInfo item) {
+        final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
+
+        selectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    listener.addSelection(item);
+                } else {
+                    listener.deleteSelection(item);
+                }
+            }
+        });
+
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemClick(item);
+                if (listener.isInSelectionMode()) {
+                    selectCheckBox.performClick();
+                }
+                else {
+                    listener.onItemClick(item);
+                }
             }
         });
 
@@ -45,9 +65,18 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             @Override
             public boolean onLongClick(View v) {
                 listener.onItemLongClick(v);
+                if (listener.isInSelectionMode()) {
+                    selectCheckBox.performClick();
+                }
                 return true;
             }
         });
+
+        if (listener.isInSelectionMode()) {
+            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.GONE);
+        }
     }
 
     public void refreshTitle(String title) {
@@ -65,7 +94,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         } else {
             if (item.status == TodoItemInfo.Status.Done) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.green));
-            } else if (item.status == TodoItemInfo.Status.Expired) {
+            } else if (item.status == TodoItemInfo.Status.Overdue) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
             }
             dateTextView.setText(item.status.toString());

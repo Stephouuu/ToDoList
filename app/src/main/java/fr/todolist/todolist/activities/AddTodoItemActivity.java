@@ -4,9 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,11 +25,11 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private View root;
 
     private EditText titleEditText;
+    private SwitchCompat reminderSwitchCompat;
     private EditText contentEditText;
     private EditText dateEditText;
     private EditText timeEditText;
     private FloatingActionButton addFab;
-    //private Button addButton;
 
     private AppDatabase database;
     private TodoItemInfo info;
@@ -51,56 +50,18 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        root = findViewById(R.id.add_todo_item_root);
         titleEditText = (EditText)findViewById(R.id.add_item_title);
         contentEditText = (EditText)findViewById(R.id.add_item_content);
         dateEditText = (EditText)findViewById(R.id.add_item_date);
         timeEditText = (EditText)findViewById(R.id.add_item_time);
         addFab = (FloatingActionButton)findViewById(R.id.add_item);
-        //addButton = (Button)findViewById(R.id.add_item_button);
-        root = findViewById(R.id.add_todo_item_root);
-
-        StaticTools.showKeyboard(getApplicationContext());
-
-        /*root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (StaticTools.keyboardIsDisplay(root)) {
-                    addButton.setVisibility(View.GONE);
-                } else {
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    addButton.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-                    }, 100);
-                }
-            }
-        });*/
+        reminderSwitchCompat = (SwitchCompat)findViewById(R.id.add_todo_item_reminder);
 
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onValid();
-            }
-        });
-
-        titleEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                info.title = s.toString();
             }
         });
 
@@ -110,21 +71,6 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 if (!hasFocus) {
                     confirmTitle();
                 }
-            }
-        });
-
-        contentEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                info.content = s.toString();
             }
         });
 
@@ -154,6 +100,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 dialog.show(getSupportFragmentManager(), "Time");
             }
         });
+
+        StaticTools.showKeyboard(getApplicationContext());
+
 
     }
 
@@ -214,7 +163,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
     @Override
     public void onDateSet(int year, int month, int day) {
-        dateEditText.setText(String.format(getString(R.string.format_date), year, month + 1, day));
+        dateEditText.setText(getString(R.string.format_date_usr, day, DateTimeManager.getMonth(month), year));
         info.year = year;
         info.month = month;
         info.day = day;
@@ -239,6 +188,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     @Override
     public void onValid() {
         if (confirm()) {
+            info.title = titleEditText.getText().toString();
+            info.content = contentEditText.getText().toString();
+            info.remind = reminderSwitchCompat.isChecked();
             info.dateTime = DateTimeManager.formatDateTime(info.year, info.month, info.day, info.hour, info.minute);
             long time = DateTimeManager.castDateTimeToUnixTime(info.dateTime);
 

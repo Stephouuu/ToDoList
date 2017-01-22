@@ -199,6 +199,21 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     }
 
     @Override
+    public void addSelection(TodoItemInfo item) {
+
+    }
+
+    @Override
+    public void deleteSelection(TodoItemInfo item) {
+
+    }
+
+    @Override
+    public boolean isInSelectionMode() {
+        return false;
+    }
+
+    @Override
     public TodoItemFilter getFilter() {
         return (filter);
     }

@@ -25,6 +25,7 @@
             android:layout_height="wrap_content">
 
             <CheckedTextView
+                android:gravity="center_vertical"
                 android:theme="@style/App_CheckedBoxStyle"
                 android:text="@string/inProgress"
                 android:id="@+id/checkbox_inprogress"
@@ -34,6 +35,7 @@
                 android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
 
             <CheckedTextView
+                android:gravity="center_vertical"
                 android:theme="@style/App_CheckedBoxStyle"
                 android:text="@string/done"
                 android:id="@+id/checkbox_ok"
@@ -43,6 +45,7 @@
                 android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
 
             <CheckedTextView
+                android:gravity="center_vertical"
                 android:theme="@style/App_CheckedBoxStyle"
                 android:text="@string/expired"
                 android:id="@+id/checkbox_expired"

@@ -128,7 +128,7 @@ public class DateTimeManager {
         return (ret);
     }
 
-    private static String getDay(int day) {
+    public static String getDay(int day) {
         String str = String.valueOf(day);
 
         if (day - 1 < DaysSuffix.length) {
@@ -139,7 +139,7 @@ public class DateTimeManager {
         return (str);
     }
 
-    private static String getMonth(int month) {
+    public static String getMonth(int month) {
         return (MonthArray[month]);
     }
 

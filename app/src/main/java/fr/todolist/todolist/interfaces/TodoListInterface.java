@@ -10,7 +10,17 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public interface TodoListInterface {
 
+    enum Mode {
+        Normal,
+        Selection
+    }
+
     void onItemClick(TodoItemInfo item);
     void onItemLongClick(View view);
+
+    void addSelection(TodoItemInfo item);
+    void deleteSelection(TodoItemInfo item);
+
+    boolean isInSelectionMode();
 
 }
