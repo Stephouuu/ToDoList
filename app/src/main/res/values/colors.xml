@@ -22,6 +22,10 @@
     <color name="white75">#BFFFFFFF</color>
     <color name="white50">#80FFFFFF</color>
 
+    <color name="black100">#FF000000</color>
+    <color name="black75">#BF000000</color>
+    <color name="black50">#80000000</color>
+
     <color name="green">#009900</color>
     <color name="yellow">#CECE00</color>
     <color name="red">#E50000</color>

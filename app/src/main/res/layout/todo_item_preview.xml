@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/background"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/todo_preview_parent"
         android:layout_width="match_parent"
         android:layout_height="80.2dp"
@@ -16,56 +15,69 @@
         android:layout_marginRight="8.4dp"
         android:layout_marginLeft="8.4dp">
 
-        <LinearLayout
-            android:id="@+id/todo_item_text_root"
-            android:orientation="vertical"
-            android:gravity="center_vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/todo_item_title"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textSize="18sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <!--<TextView
-                android:id="@+id/todo_item_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textSize="16sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />-->
-
-            <TextView
-                android:id="@+id/todo_item_datetime"
-                android:textColor="@color/colorPrimary100"
-                android:textSize="14sp"
-                android:textStyle="italic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <!--<TextView
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/todo_item_status"
-            android:textStyle="italic"
-            android:textSize="14sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />-->
-
         <View
             android:id="@+id/todo_item_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/background" />
 
-    </RelativeLayout>
+        <LinearLayout
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/todo_item_text_root"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/todo_item_title"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/todo_item_datetime"
+                    android:textColor="@color/colorPrimary100"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:gravity="end"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:visibility="gone"
+                    android:contentDescription="@null"
+                    android:background="@android:color/transparent"
+                    android:src="@mipmap/menu_icon_validate"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <View
         android:id="@+id/footer"

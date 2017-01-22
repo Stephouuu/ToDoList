@@ -166,10 +166,10 @@ public class TodoItemDatabase implements SearchInterface {
         item.dateTime = cursor.getString(MySQLite.NUM_COL_DUE_DATE);
 
         int status = cursor.getInt(MySQLite.NUM_COL_FLAG_STATUS);
-        if (status == TodoItemInfo.Status.TODO.getValue()) {
-            item.status = TodoItemInfo.Status.TODO;
-        } else if (status == TodoItemInfo.Status.Ok.getValue()) {
-            item.status = TodoItemInfo.Status.Ok;
+        if (status == TodoItemInfo.Status.ToDo.getValue()) {
+            item.status = TodoItemInfo.Status.ToDo;
+        } else if (status == TodoItemInfo.Status.Done.getValue()) {
+            item.status = TodoItemInfo.Status.Done;
         } else if (status == TodoItemInfo.Status.Expired.getValue()) {
             item.status = TodoItemInfo.Status.Expired;
         }

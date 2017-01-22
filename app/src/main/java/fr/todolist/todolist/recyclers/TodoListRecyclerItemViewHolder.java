@@ -54,19 +54,16 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         ((TextView)parent.findViewById(R.id.todo_item_title)).setText(title);
     }
 
-    /*public void refreshContent(String content) {
-        ((TextView)parent.findViewById(R.id.todo_item_content)).setText(content);
-    }*/
-
     public void refreshDate(TodoItemInfo item) {
         TextView dateTextView = (TextView)parent.findViewById(R.id.todo_item_datetime);
         String date = DateTimeManager.getUserFriendlyDateTime(activity, item.dateTime, item.year,
                 item.month, item.day, item.hour, item.minute);
 
-        if (item.status == TodoItemInfo.Status.TODO) {
+        if (item.status == TodoItemInfo.Status.ToDo) {
             dateTextView.setText(date);
+            dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
         } else {
-            if (item.status == TodoItemInfo.Status.Ok) {
+            if (item.status == TodoItemInfo.Status.Done) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.green));
             } else if (item.status == TodoItemInfo.Status.Expired) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
@@ -74,21 +71,6 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             dateTextView.setText(item.status.toString());
         }
     }
-
-    /*public void refreshStatus(TodoItemInfo item) {
-        TextView status = (TextView)parent.findViewById(R.id.todo_item_status);
-        String[] array = activity.getResources().getStringArray(R.array.todo_status);
-
-        if (item.status == TodoItemInfo.Status.Ok) {
-            status.setTextColor(ContextCompat.getColor(activity, R.color.green));
-        } else if (item.status == TodoItemInfo.Status.Expired) {
-            status.setTextColor(ContextCompat.getColor(activity, R.color.red));
-        } else if (item.status == TodoItemInfo.Status.InProgress) {
-            status.setTextColor(ContextCompat.getColor(activity, R.color.yellow));
-        }
-
-        status.setText(array[item.status.ordinal()]);
-    }*/
 
     public void rounded_border_top_bottom() {
         parent.findViewById(R.id.todo_preview_parent).setBackgroundResource(R.drawable.rounded_border_top_bottom);

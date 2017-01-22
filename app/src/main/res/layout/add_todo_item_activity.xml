@@ -2,13 +2,13 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/AppBarTheme"
     android:id="@+id/add_todo_item_root"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
-        android:theme="@style/AppBarTheme"
         android:id="@+id/appBarLayout"
         android:background="@color/colorPrimary100"
         android:layout_width="match_parent"
@@ -82,6 +82,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:theme="@style/App_EditTextStyle"
                     android:gravity="center"
                     android:id="@+id/add_item_date"
                     android:inputType="date"
@@ -99,12 +100,13 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="\@"
+                        android:text="@string/datetime_separator"
                         android:textColor="@color/colorPrimary100"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
                     <EditText
+                        android:theme="@style/App_EditTextStyle"
                         android:gravity="center"
                         android:id="@+id/add_item_time"
                         android:inputType="time"
@@ -119,6 +121,7 @@
             </LinearLayout>
 
             <EditText
+                android:theme="@style/App_EditTextStyle"
                 android:id="@+id/add_item_content"
                 android:hint="@string/content"
                 android:inputType="textMultiLine"

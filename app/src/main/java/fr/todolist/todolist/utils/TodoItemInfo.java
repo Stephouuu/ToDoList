@@ -10,8 +10,8 @@ import android.os.Parcelable;
 public class TodoItemInfo implements Parcelable {
 
     public enum Status {
-        TODO(1),
-        Ok(2),
+        ToDo(1),
+        Done(2),
         Expired(4);
 
         private int value;
@@ -19,10 +19,6 @@ public class TodoItemInfo implements Parcelable {
         Status(int value) {
             this.value = value;
         }
-
-        /*public void setValue(int value) {
-            this.value = value;
-        }*/
 
         public int getValue() {
             return value;
@@ -45,7 +41,7 @@ public class TodoItemInfo implements Parcelable {
         title = "Title";
         content = "Content";
         dateTime = "0000-00-00 00:00";
-        status = Status.TODO;
+        status = Status.ToDo;
         year = 0;
         month = 0;
         day = 0;

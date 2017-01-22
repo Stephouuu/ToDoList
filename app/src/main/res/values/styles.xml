@@ -1,35 +1,29 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimary" tools:targetApi="21">@color/colorPrimary</item>
-
+        <item name="colorPrimary">@color/colorPrimary100</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorPrimaryDark" tools:targetApi="21">@color/colorPrimaryDark</item>
-
         <item name="colorAccent">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent" tools:targetApi="21">@color/colorPrimaryDark</item>
+
+        <item name="colorControlNormal">@color/white100</item>
+        <item name="colorControlActivated">@color/colorPrimary100</item>
+        <item name="colorControlHighlight">@color/colorPrimary50</item>
 
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
-        <item name="android:homeAsUpIndicator">@mipmap/menu_icon_back</item>
-        <item name="android:editTextStyle">@style/App_EditTextStyle</item>
-        <item name="android:buttonStyle">@style/App_ButtonStyle</item>
-        <item name="android:listViewStyle">@style/App_ListViewStyle</item>
-
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/background_100</item>
 
-        <item name="colorControlNormal">@color/grey_light_100</item>
-        <item name="android:colorControlNormal" tools:targetApi="21">@color/grey_light_100</item>
+        <item name="android:editTextStyle">@style/App_EditTextStyle</item>
+        <item name="android:buttonStyle">@style/App_ButtonStyle</item>
+        <item name="android:listViewStyle">@style/App_ListViewStyle</item>
+    </style>
 
-        <item name="colorControlActivated">@color/colorPrimary100</item>
-        <item name="android:colorControlActivated" tools:targetApi="21">@color/colorPrimary100</item>
-
-        <item name="colorControlHighlight">@color/colorPrimary50</item>
-        <item name="android:colorControlHighlight" tools:targetApi="21">@color/colorPrimary50</item>
+    <style name="App_CheckedBoxStyle" parent="Theme.AppCompat">
+        <item name="android:textColor">@color/black100</item>
+        <item name="android:textColorSecondary">@color/colorPrimary100</item>
+        <item name="colorAccent">@color/colorPrimary100</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -37,11 +31,13 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="App_EditTextStyle" parent="@android:style/Widget.EditText">
+        <item name="colorControlNormal">@color/grey_light_100</item>
+        <item name="colorControlActivated">@color/colorPrimary100</item>
+        <item name="colorControlHighlight">@color/colorPrimary50</item>
         <item name="android:textColor">#000000</item>
         <item name="android:textColorHint">@color/grey_light_100</item>
         <item name="android:textSize">16sp</item>
     </style>
-
 
 
     <style name="App_ButtonStyle" parent="@android:style/Widget.Button">
@@ -63,17 +59,14 @@
     </style>
 
 
-
     <style name="AppBarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimary" tools:targetApi="21">@color/colorPrimary</item>
-
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorPrimaryDark" tools:targetApi="21">@color/colorPrimaryDark</item>
-
         <item name="colorAccent">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent" tools:targetApi="21">@color/colorPrimaryDark</item>
+
+        <item name="colorControlNormal">@color/white100</item>
+        <item name="colorControlActivated">@color/white100</item>
+        <item name="colorControlHighlight">@color/white75</item>
 
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -82,23 +75,40 @@
         <item name="android:windowBackground">@color/background_100</item>
 
         <item name="android:editTextStyle">@style/AppBar_EditTextStyle</item>
-
-        <item name="colorControlNormal">@color/white100</item>
-        <item name="android:colorControlNormal" tools:targetApi="21">@color/white100</item>
-
-        <item name="colorControlActivated">@color/white100</item>
-        <item name="android:colorControlActivated" tools:targetApi="21">@color/white100</item>
-
-        <item name="colorControlHighlight">@color/white75</item>
-        <item name="android:colorControlHighlight" tools:targetApi="21">@color/white75</item>
-
-
     </style>
 
     <style name="AppBar_EditTextStyle" parent="@android:style/Widget.EditText">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@android:color/white</item>
         <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="AddItem_EditTextStyle" parent="@android:style/Widget.EditText">
+        <item name="colorControlNormal">@color/grey_light_100</item>
+        <item name="colorControlActivated">@color/colorPrimary100</item>
+        <item name="colorControlHighlight">@color/colorPrimary50</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textColorHint">@color/grey_light_100</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Search Layout Style -->
+    <style name="SearchTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+
+        <item name="colorControlNormal">@color/colorPrimary75</item>
+        <item name="colorControlActivated">@color/colorPrimary100</item>
+        <item name="colorControlHighlight">@color/colorPrimary100</item>
+
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/background_100</item>
+
+        <item name="android:homeAsUpIndicator">@mipmap/menu_icon_back</item>
     </style>
 
 </resources>

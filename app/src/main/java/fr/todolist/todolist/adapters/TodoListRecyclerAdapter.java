@@ -1,16 +1,11 @@
 package fr.todolist.todolist.adapters;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +14,6 @@ import fr.todolist.todolist.R;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.recyclers.TodoListRecyclerHeaderViewHolder;
 import fr.todolist.todolist.recyclers.TodoListRecyclerItemViewHolder;
-import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -85,9 +79,7 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
             ((TodoListRecyclerItemViewHolder)holder).refreshView(item);
             ((TodoListRecyclerItemViewHolder)holder).refreshTitle(item.title);
-            //((TodoListRecyclerItemViewHolder)holder).refreshContent(item.content);
             ((TodoListRecyclerItemViewHolder)holder).refreshDate(item);
-            //((TodoListRecyclerItemViewHolder)holder).refreshStatus(item);
 
             if (position == 0 && position == getBasicItemCount() - 1) {
                 ((TodoListRecyclerItemViewHolder)holder).rounded_border_top_bottom();

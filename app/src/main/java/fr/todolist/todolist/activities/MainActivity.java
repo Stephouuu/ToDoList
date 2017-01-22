@@ -4,9 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +22,7 @@ import fr.todolist.todolist.database.TodoItemDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.Preferences;
 import fr.todolist.todolist.utils.Routes;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
@@ -34,11 +32,8 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     private static final int REQUEST_ADD_ITEM = 1;
 
     private FloatingActionButton addFab;
-    private ActionBarDrawerToggle toggle;
-    private DrawerLayout drawer;
     private TodoItemDatabase database;
     private TodoItemFilter filter;
-    private MenuItem searchItem;
     private TodoListFragment todoListFragment;
 
     @Override
@@ -49,8 +44,11 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         database = new TodoItemDatabase(getApplicationContext());
         database.open();
 
-        filter = new TodoItemFilter();
-        filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK);
+        filter = Preferences.getHomePageFilter(getApplicationContext());
+        if (filter == null) {
+            filter = new TodoItemFilter();
+            filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK);
+        }
 
         Routes.Load(getIntent().getData());
 
@@ -59,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
         addFab = (FloatingActionButton)findViewById(R.id.main_add_fab);
 
-        drawer = (DrawerLayout)findViewById(R.id.main_drawer);
+        /*drawer = (DrawerLayout)findViewById(R.id.main_drawer);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open, R.string.close);
         toggle.setDrawerIndicatorEnabled(false);
         toggle.setHomeAsUpIndicator(R.mipmap.hamburger);
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     drawer.openDrawer(GravityCompat.START);
                 }
             }
-        });
+        });*/
 
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-
-        searchItem = menu.findItem(R.id.main_menu_search);
 
         menu.add(getString(R.string.filter));
 
@@ -163,16 +159,11 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         final CheckedTextView expired = (CheckedTextView)view.findViewById(R.id.checkbox_expired);
 
         builder.setView(view)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        Preferences.setHomePageFilter(getApplicationContext(), filter);
                         refreshFragment();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
                     }
                 })
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -230,15 +221,16 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     private void refreshFragment() {
         if (todoListFragment == null) {
-            TodoListFragment fragment = new TodoListFragment();
+            todoListFragment = new TodoListFragment();
             //TodoItemFilter filter = new TodoItemFilter();
             //filter.expired = false;
             //filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK);
             Bundle args = new Bundle();
+            todoListFragment.setArguments(args);
             //args.putParcelable(TodoListFragment.EXTRA_FILTER, filter);
-            fragment.setArguments(args);
+            todoListFragment.setArguments(args);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, fragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment, todoListFragment).commit();
         } else {
             todoListFragment.onResume();
         }

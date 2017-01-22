@@ -62,7 +62,6 @@ public class StaticTools {
         boolean predicate;
 
         for (TodoItemInfo item : list) {
-            //predicate = (!filter.hasFlags(TodoItemFilter.STATUS_EXPIRED) && item.status == TodoItemInfo.Status.Expired);
             Log.i("filter", item.title + ": " + item.status.toString());
             predicate = filter.hasFlags(item.status.getValue());
             if (predicate) {

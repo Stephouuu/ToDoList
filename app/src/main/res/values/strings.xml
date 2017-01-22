@@ -43,4 +43,9 @@
     <string name="Parameter">Parameter</string>
     <string name="filter">Filter</string>
 
+    <string name="inProgress">In Progress</string>
+    <string name="done">Done</string>
+    <string name="expired">Expired</string>
+    <string name="datetime_separator">\@</string>
+
 </resources>
