@@ -7,29 +7,50 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MySQLite extends SQLiteOpenHelper {
 
-    public static final String TABLE_NAME = "Todo";
+    public static final String TODO_TABLE_NAME = "Todo";
 
-    public static final String COL_ID = "ID";
-    public static final int NUM_COL_ID = 0;
+    public static final String TODO_COL_ID = "ID";
+    public static final int TODO_NUM_COL_ID = 0;
 
-    public static final String COL_TITLE = "title";
-    public static final int NUM_COL_TITLE = 1;
+    public static final String TODO_COL_TITLE = "title";
+    public static final int TODO_NUM_COL_TITLE = 1;
 
-    public static final String COL_CONTENT = "content";
-    public static final int NUM_COL_CONTENT = 2;
+    public static final String TODO_COL_CONTENT = "content";
+    public static final int TODO_NUM_COL_CONTENT = 2;
 
-    public static final String COL_DUE_DATE = "due_date";
-    public static final int NUM_COL_DUE_DATE = 3;
+    public static final String TODO_COL_DUE_DATE = "due_date";
+    public static final int TODO_NUM_COL_DUE_DATE = 3;
 
-    public static final String COL_FLAG_STATUS = "status";
-    public static final int NUM_COL_FLAG_STATUS = 4;
+    public static final String TODO_COL_FLAG_STATUS = "status";
+    public static final int TODO_NUM_COL_FLAG_STATUS = 4;
 
-    private static final String TABLE = "CREATE TABLE " + TABLE_NAME + " ("
-            + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + COL_TITLE + " TEXT NOT NULL, "
-            + COL_CONTENT + " TEXT NOT NULL, "
-            + COL_DUE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
-            + COL_FLAG_STATUS + " INTEGER DEFAULT 0);";
+    private static final String TODO_TABLE = "CREATE TABLE " + TODO_TABLE_NAME + " ("
+            + TODO_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TODO_COL_TITLE + " TEXT NOT NULL, "
+            + TODO_COL_CONTENT + " TEXT NOT NULL, "
+            + TODO_COL_DUE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+            + TODO_COL_FLAG_STATUS + " INTEGER DEFAULT 0);";
+
+
+    public static final String ALARM_TABLE_NAME = "Alarm";
+
+    public static final String ALARM_COL_ID = "ID";
+    public static final int ALARM_NUM_COL_ID = 0;
+
+    public static final String ALARM_COL_ID_ITEM = "id_item";
+    public static final int ALARM_NUM_COL_ID_ITEM = 1;
+
+    public static final String ALARM_COL_TITLE = "title";
+    public static final int ALARM_NUM_COL_TITLE = 2;
+
+    public static final String ALARM_COL_CONTENT = "content";
+    public static final int ALARM_NUM_COL_CONTENT = 3;
+
+    private static final String ALARM_TABLE = "CREATE TABLE " + ALARM_TABLE_NAME + " ("
+            + ALARM_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + ALARM_COL_ID_ITEM + " INTEGER NOT NULL, "
+            + ALARM_COL_TITLE + " TEXT NOT NULL, "
+            + ALARM_COL_CONTENT + " TEXT NOT NULL);";
 
     /**
      * @param context Le contexte
@@ -43,12 +64,14 @@ public class MySQLite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(TABLE);
+        db.execSQL(TODO_TABLE);
+        db.execSQL(ALARM_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE " + TABLE_NAME + ";");
+        db.execSQL("DROP TABLE " + TODO_TABLE_NAME + ";");
+        db.execSQL("DROP TABLE " + ALARM_TABLE_NAME + ";");
         onCreate(db);
     }
 

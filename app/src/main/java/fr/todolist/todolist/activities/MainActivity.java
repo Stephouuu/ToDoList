@@ -18,7 +18,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import fr.todolist.todolist.R;
-import fr.todolist.todolist.database.TodoItemDatabase;
+import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     private static final int REQUEST_ADD_ITEM = 1;
 
     private FloatingActionButton addFab;
-    private TodoItemDatabase database;
+    private AppDatabase database;
     private TodoItemFilter filter;
     private TodoListFragment todoListFragment;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        database = new TodoItemDatabase(getApplicationContext());
+        database = new AppDatabase(getApplicationContext());
         database.open();
 
         filter = Preferences.getHomePageFilter(getApplicationContext());

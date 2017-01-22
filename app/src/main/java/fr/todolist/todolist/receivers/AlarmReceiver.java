@@ -11,13 +11,12 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.support.v4.util.LongSparseArray;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.activities.MainActivity;
-import fr.todolist.todolist.database.TodoItemDatabase;
+import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.utils.AlertInfo;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -30,8 +29,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     private final static String EXTRA_ALARM = "extra.receiver.alert";
     private final static String EXTRA_ITEM = "extra.receiver.item";
 
-    private final static LongSparseArray<AlertInfo> Alerts = new LongSparseArray<>();
-
     @NonNull
     private static final AtomicInteger id = new AtomicInteger(0);
 
@@ -39,14 +36,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         AlertInfo alert = intent.getParcelableExtra(EXTRA_ALARM);
         TodoItemInfo item = intent.getParcelableExtra(EXTRA_ITEM);
-        if (item != null) {
-            deleteAlarm(context, item.id);
-        }
 
-        if (alert != null) {
-            alarm(context, item, String.format(context.getString(R.string.alert_title), alert.title), alert.content);
-        } else {
-            alarm(context, item, "Wake up!", "You have to do something");
+        if (item != null) {
+            deleteAlarm(context, (int)item.id);
+            if (alert != null) {
+                alarm(context, item, String.format(context.getString(R.string.alert_title), alert.title), alert.content);
+            } else {
+                alarm(context, item, "Wake up!", "You have to do something");
+            }
         }
     }
 
@@ -64,11 +61,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setData(Uri.parse("doit://consultation/" + item.id));
 
-        TodoItemDatabase database = new TodoItemDatabase(context);
-        database.open();
         item.status = TodoItemInfo.Status.Expired;
-        database.updateTodoItem(item);
-        database.close();
+
+        AppDatabase database = new AppDatabase(context);
+        database.open();
+        database.updateItem(item);
 
         builder.setContentIntent(PendingIntent.getActivity(context, id.get(), intent, PendingIntent.FLAG_ONE_SHOT));
         Notification notification = builder.build();
@@ -76,30 +73,41 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         manager.notify(id.incrementAndGet(), notification);
     }
 
-    public static void addAlarm(Context context, String title, String content, TodoItemInfo item, long ms) {
+    public static void addAlarm(Context context, TodoItemInfo item, long ms) {
         AlertInfo alert = new AlertInfo();
-        alert.title = title;
-        alert.content = content;
-        alert.time = ms;
+        alert.idTodoItem = (int)item.id;
+        alert.title = item.title;
+        alert.content = item.content;
+        //alert.time = ms;
+
+        AppDatabase database = new AppDatabase(context);
+        database.open();
+        alert = database.insertItem(alert);
 
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(EXTRA_ALARM, alert);
         intent.putExtra(EXTRA_ITEM, item);
         PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alert.time, pIntent);
-        Alerts.put(item.id, alert);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, ms, pIntent);
     }
 
-    public static void deleteAlarm(Context context, long key) {
-        if (Alerts.get(key) != null) {
-            AlertInfo alert = Alerts.get(key);
-            Alerts.remove(key);
+    public static void deleteAlarm(Context context, int idItem) {
+        AppDatabase database = new AppDatabase(context);
+        database.open();
 
-            AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(context, AlarmReceiver.class);
-            PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
-            alarmManager.cancel(pIntent);
-        }
+        /*Log.i("alert", "idItem: " + idItem);
+        List<AlertInfo> alerts = database.getAlerts();
+        for (AlertInfo alert : alerts) {
+            Log.i("alert", "idTodoItem: " + alert.idTodoItem);
+        }*/
+
+        AlertInfo alert = database.getAlertInfoByItemID(idItem);
+        database.deleteAlert(alert.id);
+
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, alert.id, intent, PendingIntent.FLAG_ONE_SHOT);
+        alarmManager.cancel(pIntent);
     }
 }

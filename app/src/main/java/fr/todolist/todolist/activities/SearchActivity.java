@@ -22,7 +22,7 @@ import java.util.List;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.adapters.SearchViewPagerAdapter;
-import fr.todolist.todolist.database.TodoItemDatabase;
+import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
@@ -44,7 +44,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     private RelativeLayout introContainer;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private TodoItemDatabase database;
+    private AppDatabase database;
     private TodoItemFilter filter;
 
     private TodoListFragment searchTitleFragment;
@@ -56,7 +56,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
 
-        database = new TodoItemDatabase(getApplicationContext());
+        database = new AppDatabase(getApplicationContext());
         database.open();
 
         filter = new TodoItemFilter();

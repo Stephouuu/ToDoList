@@ -27,7 +27,7 @@
     <string name="date_time">%1$s %2$s %3$s</string>
 
     <string name="date_transform_tomorrow">Tomorrow</string>
-    <string name="date_transform_seconds">&lt; 1 minute</string>
+    <string name="date_transform_seconds">less than 1 minute</string>
     <string name="date_transform_minutes">%d minutes</string>
     <string name="date_transform_hours">%d hours</string>
     <string name="date_transform_days">%d days</string>

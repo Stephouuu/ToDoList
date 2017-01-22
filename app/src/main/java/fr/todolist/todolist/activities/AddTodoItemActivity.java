@@ -8,16 +8,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import fr.todolist.todolist.R;
-import fr.todolist.todolist.database.TodoItemDatabase;
+import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.DatePickerFragment;
 import fr.todolist.todolist.fragments.TimePickerFragment;
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
@@ -37,7 +32,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private FloatingActionButton addFab;
     //private Button addButton;
 
-    private TodoItemDatabase database;
+    private AppDatabase database;
     private TodoItemInfo info;
 
     @Override
@@ -45,7 +40,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_todo_item_activity);
 
-        database = new TodoItemDatabase(getApplicationContext());
+        database = new AppDatabase(getApplicationContext());
         database.open();
         info = new TodoItemInfo();
 
@@ -249,7 +244,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
             if (DateTimeManager.isDateTimeValid(time)) {
                 info = database.insertItem(info);
-                AlarmReceiver.addAlarm(this, info.title, info.content, info, time);
+                AlarmReceiver.addAlarm(this, info, time);
                 database.close();
                 setResult(RESULT_OK);
                 finish();
