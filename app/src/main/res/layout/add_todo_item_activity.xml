@@ -48,14 +48,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <!--<TextView
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:text="@string/title"
-                    android:textColor="@android:color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />-->
-
                 <EditText
                     android:textColor="@color/white100"
                     android:textColorHint="@color/white100"
@@ -89,30 +81,112 @@
             <LinearLayout
                 android:layout_marginTop="56dp"
                 android:layout_marginBottom="38dp"
-                android:layout_marginEnd="18dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
-                    android:contentDescription="@null"
-                    android:src="@mipmap/clock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_marginStart="32dp"
-                    android:text="@string/remind_me"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:checked="true"
-                    android:layout_gravity="end"
-                    android:id="@+id/add_todo_item_reminder"
+                <LinearLayout
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="18dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:contentDescription="@null"
+                        android:src="@mipmap/clock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_marginStart="32dp"
+                        android:text="@string/remind_me"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:checked="true"
+                        android:layout_gravity="end"
+                        android:id="@+id/add_todo_item_reminder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/add_item_recurrence_parent"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:weightSum="3"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:gravity="center_vertical"
+                            android:text="Repeat"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <EditText
+                            android:id="@+id/add_item_recurrence_time"
+                            android:gravity="center"
+                            android:theme="@style/App_EditTextStyle"
+                            android:hint="times"
+                            android:inputType="numberDecimal"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:gravity="center"
+                            android:text="Time(s)"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:weightSum="3"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Intervals "
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <EditText
+                            android:hint="interval"
+                            android:id="@+id/add_item_recurrence_interval"
+                            android:gravity="center"
+                            android:theme="@style/App_EditTextStyle"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:inputType="numberDecimal"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:id="@+id/add_item_recurrence_interval_label"
+                            android:gravity="center"
+                            android:text="Second(s)"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 

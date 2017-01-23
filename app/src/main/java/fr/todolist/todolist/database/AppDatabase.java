@@ -75,6 +75,9 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_DUE_DATE, item.dateTime);
         values.put(MySQLite.TODO_COL_FLAG_STATUS, item.status.getValue());
         values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
+        values.put(MySQLite.TODO_COL_NB_RECURRENCE, item.nbRecurrence);
+        values.put(MySQLite.TODO_COL_INTERVAL, item.intervalRecurrence);
+        values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
 
         item.id = database.insert(MySQLite.TODO_TABLE_NAME, null, values);
         return (item);
@@ -99,6 +102,9 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_DUE_DATE, item.dateTime);
         values.put(MySQLite.TODO_COL_FLAG_STATUS, item.status.getValue());
         values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
+        values.put(MySQLite.TODO_COL_NB_RECURRENCE, item.nbRecurrence);
+        values.put(MySQLite.TODO_COL_INTERVAL, item.intervalRecurrence);
+        values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
 
         return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + item.id, null));
     }
@@ -230,6 +236,9 @@ public class AppDatabase implements SearchInterface {
         item = DateTimeManager.retrieveDateTime(item, item.dateTime);
 
         item.remind = cursor.getInt(MySQLite.TODO_NUM_COL_REMIND) == 1;
+        item.nbRecurrence = cursor.getInt(MySQLite.TODO_NUM_COL_NB_RECURRENCE);
+        item.intervalRecurrence = cursor.getLong(MySQLite.TODO_NUM_COL_INTERVAL);
+        item.nbBaseRecurrence = cursor.getInt(MySQLite.TODO_NUM_COL_BASE_NB_RECURRENCE);
 
         return (item);
     }

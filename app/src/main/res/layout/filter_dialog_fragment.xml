@@ -1,61 +1,55 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="12dp"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/title"
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimary100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filter" />
 
     <LinearLayout
-        android:layout_margin="12dp"
         android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/title"
-            android:textSize="22sp"
-            android:textColor="@color/colorPrimary100"
+        <CheckedTextView
+            android:gravity="center_vertical"
+            android:theme="@style/App_CheckedBoxStyle"
+            android:text="@string/inProgress"
+            android:id="@+id/checkbox_inprogress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/filter" />
+            android:button="@null"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="5dp"
+        <CheckedTextView
+            android:gravity="center_vertical"
+            android:theme="@style/App_CheckedBoxStyle"
+            android:text="@string/done"
+            android:id="@+id/checkbox_ok"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
 
-            <CheckedTextView
-                android:gravity="center_vertical"
-                android:theme="@style/App_CheckedBoxStyle"
-                android:text="@string/inProgress"
-                android:id="@+id/checkbox_inprogress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
-
-            <CheckedTextView
-                android:gravity="center_vertical"
-                android:theme="@style/App_CheckedBoxStyle"
-                android:text="@string/done"
-                android:id="@+id/checkbox_ok"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
-
-            <CheckedTextView
-                android:gravity="center_vertical"
-                android:theme="@style/App_CheckedBoxStyle"
-                android:text="@string/expired"
-                android:id="@+id/checkbox_expired"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:button="@null"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
-
-        </LinearLayout>
+        <CheckedTextView
+            android:gravity="center_vertical"
+            android:theme="@style/App_CheckedBoxStyle"
+            android:text="@string/expired"
+            android:id="@+id/checkbox_expired"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple" />
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

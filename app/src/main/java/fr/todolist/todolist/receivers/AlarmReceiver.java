@@ -18,6 +18,7 @@ import fr.todolist.todolist.R;
 import fr.todolist.todolist.activities.MainActivity;
 import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.utils.AlertInfo;
+import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -48,15 +49,14 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     private void alarm(Context context, TodoItemInfo item, String title, String content) {
-        item.status = TodoItemInfo.Status.Overdue;
         AppDatabase database = new AppDatabase(context);
         database.open();
-        database.updateItem(item);
 
         if (item.remind) {
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setDefaults(Notification.DEFAULT_SOUND)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(R.drawable.todo_icon)
                     .setContentTitle(title)
@@ -71,7 +71,19 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             Notification notification = builder.build();
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
             manager.notify(id.incrementAndGet(), notification);
+
+            if (item.nbRecurrence > 0) {
+                item.nbRecurrence--;
+                long ms = item.intervalRecurrence * (item.nbBaseRecurrence - item.nbRecurrence); // 3 - 3
+                addAlarm(context, item, DateTimeManager.castDateTimeToUnixTime(item.dateTime) + ms);
+            } else {
+                item.status = TodoItemInfo.Status.Overdue;
+            }
+
+        } else {
+            item.status = TodoItemInfo.Status.Overdue;
         }
+        database.updateItem(item);
     }
 
     public static void addAlarm(Context context, TodoItemInfo item, long ms) {

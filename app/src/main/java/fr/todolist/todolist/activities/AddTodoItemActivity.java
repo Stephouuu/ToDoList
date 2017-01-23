@@ -1,13 +1,22 @@
 package fr.todolist.todolist.activities;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import fr.todolist.todolist.R;
@@ -34,6 +43,11 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private AppDatabase database;
     private TodoItemInfo info;
 
+    private View recurrenceParent;
+    private EditText recurrenceTimeEditText;
+    private EditText recurrenceIntervalEditText;
+    private TextView recurrenceLabelIntervalTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +71,11 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         timeEditText = (EditText)findViewById(R.id.add_item_time);
         addFab = (FloatingActionButton)findViewById(R.id.add_item);
         reminderSwitchCompat = (SwitchCompat)findViewById(R.id.add_todo_item_reminder);
+
+        recurrenceParent = findViewById(R.id.add_item_recurrence_parent);
+        recurrenceTimeEditText = (EditText)findViewById(R.id.add_item_recurrence_time);
+        recurrenceIntervalEditText = (EditText)findViewById(R.id.add_item_recurrence_interval);
+        recurrenceLabelIntervalTextView = (TextView)findViewById(R.id.add_item_recurrence_interval_label);
 
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,9 +120,25 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             }
         });
 
+        reminderSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    recurrenceParentOpen();
+                } else {
+                    recurrenceParentClose();
+                }
+            }
+        });
+
+        recurrenceIntervalEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createRecurrenceIntervalDialog();
+            }
+        });
+
         StaticTools.showKeyboard(getApplicationContext());
-
-
     }
 
     @Override
@@ -191,6 +226,12 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             info.title = titleEditText.getText().toString();
             info.content = contentEditText.getText().toString();
             info.remind = reminderSwitchCompat.isChecked();
+
+            if (recurrenceTimeEditText.length() > 0) {
+                info.nbRecurrence = Integer.valueOf(recurrenceTimeEditText.getText().toString()) - 1;
+                info.nbBaseRecurrence = info.nbRecurrence;
+            }
+
             info.dateTime = DateTimeManager.formatDateTime(info.year, info.month, info.day, info.hour, info.minute);
             long time = DateTimeManager.castDateTimeToUnixTime(info.dateTime);
 
@@ -204,5 +245,79 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 Toast.makeText(this, "The due date must be in the future", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void createRecurrenceIntervalDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final LayoutInflater inflater = getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.recurrence_interval, null);
+
+        final Spinner spinner = (Spinner)view.findViewById(R.id.recurrence_unit_time);
+        final EditText value = (EditText)view.findViewById(R.id.recurrence_value);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.unit_time, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        builder.setView(view)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String selectedType = spinner.getSelectedItem().toString();
+                        String v = value.getText().toString();
+
+                        if (v.length() > 0) {
+                            recurrenceIntervalEditText.setText(v);
+                            recurrenceLabelIntervalTextView.setText(selectedType);
+
+                            info.intervalRecurrence = DateTimeManager.getMs(Integer.valueOf(v), selectedType);
+                            //Log.i("info", "interval:" + info.intervalRecurrence);
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void recurrenceParentOpen() {
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_from_left);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                recurrenceParent.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        recurrenceParent.startAnimation(animation);
+    }
+
+    private void recurrenceParentClose() {
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_to_left);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                recurrenceParent.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        recurrenceParent.startAnimation(animation);
     }
 }

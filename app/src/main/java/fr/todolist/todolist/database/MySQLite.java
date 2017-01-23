@@ -27,13 +27,25 @@ public class MySQLite extends SQLiteOpenHelper {
     public static final String TODO_COL_REMIND = "remind";
     public static final int TODO_NUM_COL_REMIND = 5;
 
+    public static final String TODO_COL_NB_RECURRENCE = "nbRecurrence";
+    public static final int TODO_NUM_COL_NB_RECURRENCE = 6;
+
+    public static final String TODO_COL_INTERVAL = "interval";
+    public static final int TODO_NUM_COL_INTERVAL = 7;
+
+    public static final String TODO_COL_BASE_NB_RECURRENCE = "nbBaseRecurrence";
+    public static final int TODO_NUM_COL_BASE_NB_RECURRENCE = 8;
+
     private static final String TODO_TABLE = "CREATE TABLE " + TODO_TABLE_NAME + " ("
             + TODO_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TODO_COL_TITLE + " TEXT NOT NULL, "
             + TODO_COL_CONTENT + " TEXT NOT NULL, "
             + TODO_COL_DUE_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
             + TODO_COL_FLAG_STATUS + " INTEGER DEFAULT 0, "
-            + TODO_COL_REMIND + " INTEGER DEFAULT 0);";
+            + TODO_COL_REMIND + " INTEGER DEFAULT 0, "
+            + TODO_COL_NB_RECURRENCE + " INTEGER DEFAULT 0, "
+            + TODO_COL_INTERVAL + " INTEGER DEFAULT 0, "
+            + TODO_COL_BASE_NB_RECURRENCE + " INTEGER DEFAULT 0);";
 
 
     public static final String ALARM_TABLE_NAME = "Alarm";

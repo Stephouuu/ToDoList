@@ -81,6 +81,22 @@ public class DateTimeManager {
         return (info);
     }
 
+    public static long getMs(int value, String type) {
+        long ret = 0;
+
+        if (type.equals("Second(s)")) {
+            ret = 1000 * value;
+        } else if (type.equals("Minute(s)")) {
+            ret = 1000 * 60 * value;
+        } else if (type.equals("Hour(s)")) {
+            ret = 1000 * 60 * 60 * value;
+        } else if (type.equals("Day(s)")) {
+            ret = 1000 * 60 * 60 * 24 * value;
+        }
+
+        return (ret);
+    }
+
     public static boolean isDateTimeValid(long time) {
         return (Calendar.getInstance().getTimeInMillis() < time);
     }

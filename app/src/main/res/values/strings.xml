@@ -50,4 +50,12 @@
     <string name="datetime_separator">\@</string>
     <string name="remind_me">Remind Me</string>
 
+    <string name="repeat_count">Repeat Count</string>
+
+    <string-array name="unit_time">
+        <item>Second(s)</item>
+        <item>Minute(s)</item>
+        <item>Hour(s)</item>
+        <item>Day(s)</item>
+    </string-array>
 </resources>
