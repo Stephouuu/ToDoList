@@ -93,7 +93,7 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    private int getBasicItemCount() {
+    public int getBasicItemCount() {
         return list == null ? 0 : list.size();
     }
 

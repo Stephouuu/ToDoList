@@ -39,7 +39,6 @@ public class TodoListFragment extends Fragment {
     private TodoListRecyclerAdapter adapter;
     private LinearLayout noItemParent;
     private ImageView noItemDrawable;
-    //private TodoItemFilter filter;
     private Mode mode;
     private String searchParameter;
     private boolean retractableToolbar;
@@ -52,7 +51,6 @@ public class TodoListFragment extends Fragment {
         super.onCreate(state);
         Bundle args = getArguments();
         if (args != null) {
-            //filter = args.getParcelable(EXTRA_FILTER);
             mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDateASC)));
             searchParameter = args.getString(EXTRA_SEARCH);
         } else {
@@ -79,9 +77,9 @@ public class TodoListFragment extends Fragment {
             @Override
             public void onItemLongClick(View view) {
                 ((TodoListInterface) getActivity()).onItemLongClick(view);
-                if (((TodoListInterface) getActivity()).isInSelectionMode()) {
+                /*if (((TodoListInterface) getActivity()).isInSelectionMode()) {
                     adapter.notifyDataSetChanged();
-                }
+                }*/
             }
 
             @Override
@@ -106,6 +104,10 @@ public class TodoListFragment extends Fragment {
         }
 
         return (view);
+    }
+
+    public int getListSize() {
+        return (adapter.getBasicItemCount());
     }
 
     @Override

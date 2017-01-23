@@ -23,6 +23,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
     private Activity activity;
     private View parent;
     private TodoListInterface listener;
+    static private long selectedItem;
 
     private TodoListRecyclerItemViewHolder(Activity activity, View parent, TodoListInterface listener) {
         super(parent);
@@ -37,6 +38,16 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
     public void refreshView(final TodoItemInfo item) {
         final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
+
+        selectCheckBox.setChecked(false);
+        if (item.id == selectedItem) {
+            selectCheckBox.setChecked(true);
+        }
+        if (listener.isInSelectionMode()) {
+            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.GONE);
+        }
 
         selectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -64,19 +75,15 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         parent.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                //((CheckBox) parent.findViewById(R.id.todo_item_checkbox)).setChecked(false);
+                selectedItem = item.id;
                 listener.onItemLongClick(v);
-                if (listener.isInSelectionMode()) {
+                //if (listener.isInSelectionMode()) {
                     selectCheckBox.performClick();
-                }
+                //}
                 return true;
             }
         });
-
-        if (listener.isInSelectionMode()) {
-            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.VISIBLE);
-        } else {
-            parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.GONE);
-        }
     }
 
     public void refreshTitle(String title) {

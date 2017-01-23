@@ -13,7 +13,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.CheckedTextView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.List;
@@ -31,15 +36,25 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class MainActivity extends AppCompatActivity implements SearchInterface, TodoListInterface {
 
+    enum MainFabMode {
+        Add,
+        Cancel
+    }
+
     private static final int REQUEST_ADD_ITEM = 1;
 
-    private FloatingActionButton addFab;
+    private RelativeLayout menuFabs;
+    private boolean menuFabsOpen;
+    private FloatingActionButton validFab;
     private FloatingActionButton delFab;
+    private FloatingActionButton addFab;
+
     private AppDatabase database;
     private TodoItemFilter filter;
     private TodoListFragment todoListFragment;
 
     private LongSparseArray<TodoItemInfo> selected;
+    private MainFabMode fabMode;
     private Mode mode;
 
     @Override
@@ -59,16 +74,26 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         Routes.Load(getIntent().getData());
 
         selected = new LongSparseArray<>();
+        fabMode = MainFabMode.Add;
         mode = Mode.Normal;
+        menuFabsOpen = false;
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        addFab = (FloatingActionButton)findViewById(R.id.main_add_fab);
-        addFab.setOnClickListener(new View.OnClickListener() {
+        menuFabs = (RelativeLayout)findViewById(R.id.main_fab_menu);
+
+        validFab = (FloatingActionButton)findViewById(R.id.main_valid_fab);
+        validFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addItem();
+                for (int i = 0 ; i < selected.size() ; ++i) {
+                    TodoItemInfo item = selected.get(selected.keyAt(i));
+                    item.status = TodoItemInfo.Status.Done;
+                    database.updateItem(item);
+                    AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
+                    updateMode(Mode.Normal);
+                }
             }
         });
 
@@ -80,6 +105,18 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     TodoItemInfo item = selected.get(selected.keyAt(i));
                     database.deleteItem(item.id);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
+                }
+                updateMode(Mode.Normal);
+            }
+        });
+
+        addFab = (FloatingActionButton)findViewById(R.id.main_add_fab);
+        addFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fabMode == MainFabMode.Add) {
+                    addItem();
+                } else {
                     updateMode(Mode.Normal);
                     refreshFragment();
                 }
@@ -88,6 +125,13 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
         refreshFragment();
         refreshRoutes();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mode != Mode.Normal) {
+            updateMode(Mode.Normal);
+        }
     }
 
     @Override
@@ -168,15 +212,22 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     }
 
     private void updateMode(Mode mode) {
-        this.mode = mode;
+        if (mode == Mode.Selection && this.mode != Mode.Selection) {
+            setMainFabMode(MainFabMode.Cancel);
+        }
+        else if (mode == Mode.Normal && this.mode != Mode.Normal) {
+            setMainFabMode(MainFabMode.Add);
+        }
+
         if (mode == Mode.Normal) {
-            delFab.setVisibility(View.GONE);
-            addFab.setVisibility(View.VISIBLE);
+            selected.clear();
+            closeFabMenu();
         }
         else if (mode == Mode.Selection) {
-            addFab.setVisibility(View.GONE);
-            delFab.setVisibility(View.VISIBLE);
+            openFabMenu();
         }
+        todoListFragment.refreshList();
+        this.mode = mode;
     }
 
     private void createFilterDialogBox() {
@@ -305,5 +356,59 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     @Override
     public List<TodoItemInfo> getItemsByContent(String toSearch) {
         return (database.getItemsByContent(toSearch));
+    }
+
+    private void setMainFabMode(MainFabMode fabMode) {
+        if (fabMode == MainFabMode.Cancel) {
+            addFab.animate().rotation(45).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(400);
+        }
+        else {
+            addFab.animate().rotation(0).setInterpolator(new LinearInterpolator()).setDuration(200);
+        }
+        this.fabMode = fabMode;
+    }
+
+    private void openFabMenu() {
+        if (!menuFabsOpen) {
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_in);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    menuFabs.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            menuFabs.startAnimation(animation);
+            menuFabsOpen = true;
+        }
+    }
+
+    private void closeFabMenu() {
+        if (menuFabsOpen) {
+            Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_out);
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    menuFabs.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            menuFabs.startAnimation(animation);
+            menuFabsOpen = false;
+        }
     }
 }
