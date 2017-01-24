@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class TodoItemInfo implements Parcelable {
 
     public enum Status {
+        None(0),
         ToDo(1),
         Done(2),
         Overdue(4);

@@ -20,21 +20,36 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
+    static private long selectedItem = -1;
+
+    //static private String lastDate = "null";
+    static private TodoItemInfo.Status lastStatus = TodoItemInfo.Status.None;
+
     private Activity activity;
     private View parent;
     private TodoListInterface listener;
-    static private long selectedItem;
 
     private TodoListRecyclerItemViewHolder(Activity activity, View parent, TodoListInterface listener) {
         super(parent);
         this.activity = activity;
         this.parent = parent;
         this.listener = listener;
+
+        //init();
     }
 
     public static TodoListRecyclerItemViewHolder newInstance(Activity activity, View parent, TodoListInterface listener) {
         return (new TodoListRecyclerItemViewHolder(activity, parent, listener));
     }
+
+    static public void reset() {
+        //lastDate = "null";
+        lastStatus = TodoItemInfo.Status.None;
+    }
+
+    /*static public void init() {
+        lastStatus = TodoItemInfo.Status.None;
+    }*/
 
     public void refreshView(final TodoItemInfo item) {
         final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
@@ -75,15 +90,62 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         parent.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                //((CheckBox) parent.findViewById(R.id.todo_item_checkbox)).setChecked(false);
                 selectedItem = item.id;
                 listener.onItemLongClick(v);
-                //if (listener.isInSelectionMode()) {
-                    selectCheckBox.performClick();
-                //}
+                selectCheckBox.performClick();
                 return true;
             }
         });
+    }
+
+    public String refreshCategory(TodoItemInfo item, boolean isFirst, String lastDateCategory) {
+        TextView textView = (TextView) parent.findViewById(R.id.todo_preview_category);
+        String text = DateTimeManager.getDay(item.day) + " " + DateTimeManager.getMonth(item.month)
+                + " " + DateTimeManager.getYear(item.year);
+
+        if (isFirst) {
+            if (item.status == TodoItemInfo.Status.Overdue) {
+                text = activity.getString(R.string.expired);
+                textView.setTextColor(ContextCompat.getColor(activity, R.color.red));
+            } else if (item.status == TodoItemInfo.Status.Done) {
+                text = activity.getString(R.string.done);
+                textView.setTextColor(ContextCompat.getColor(activity, R.color.green));
+            } else {
+                if (DateTimeManager.isToday(item.year, item.month, item.day)) {
+                    text = activity.getString(R.string.today);
+                } else if (DateTimeManager.isTomorrow(item.year, item.month, item.day)) {
+                    text = activity.getString(R.string.tomorrow);
+                }
+                textView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
+            }
+        } else {
+            if (item.status == TodoItemInfo.Status.ToDo) {
+                if (DateTimeManager.isToday(item.year, item.month, item.day)) {
+                    text = activity.getString(R.string.today);
+                } else if (DateTimeManager.isTomorrow(item.year, item.month, item.day)) {
+                    text = activity.getString(R.string.tomorrow);
+                }
+            }
+            textView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
+        }
+
+        if (lastStatus != TodoItemInfo.Status.ToDo && (item.status == TodoItemInfo.Status.Overdue || item.status == TodoItemInfo.Status.Done)) {
+            if (isFirst) {
+                lastStatus = item.status;
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(text);
+            } else {
+                textView.setVisibility(View.GONE);
+            }
+        } else if (!lastDateCategory.equals(text)) {
+            lastDateCategory = text;
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
+
+        return lastDateCategory;
     }
 
     public void refreshTitle(String title) {
@@ -95,8 +157,8 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         String date = DateTimeManager.getUserFriendlyDateTime(activity, item.dateTime, item.year,
                 item.month, item.day, item.hour, item.minute);
 
+        dateTextView.setText(date);
         if (item.status == TodoItemInfo.Status.ToDo) {
-            dateTextView.setText(date);
             dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
         } else {
             if (item.status == TodoItemInfo.Status.Done) {
@@ -104,7 +166,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             } else if (item.status == TodoItemInfo.Status.Overdue) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
             }
-            dateTextView.setText(item.status.toString());
+            //dateTextView.setText(item.status.toString());
         }
     }
 
@@ -122,13 +184,21 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
     public void rounded_border_bottom() {
         parent.findViewById(R.id.todo_preview_parent).setBackgroundResource(R.drawable.rounded_border_bottom);
-        parent.findViewById(R.id.todo_item_divider).setVisibility(View.VISIBLE);
+        if (parent.findViewById(R.id.todo_preview_category).getVisibility() == View.GONE) {
+            parent.findViewById(R.id.todo_item_divider).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.todo_item_divider).setVisibility(View.GONE);
+        }
         parent.findViewById(R.id.footer).setVisibility(View.VISIBLE);
     }
 
     public void no_rounded() {
         parent.findViewById(R.id.todo_preview_parent).setBackgroundColor(Color.parseColor("#FFFFFF"));
-        parent.findViewById(R.id.todo_item_divider).setVisibility(View.VISIBLE);
+        if (parent.findViewById(R.id.todo_preview_category).getVisibility() == View.GONE) {
+            parent.findViewById(R.id.todo_item_divider).setVisibility(View.VISIBLE);
+        } else {
+            parent.findViewById(R.id.todo_item_divider).setVisibility(View.GONE);
+        }
         parent.findViewById(R.id.footer).setVisibility(View.GONE);
     }
 }

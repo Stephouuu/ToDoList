@@ -74,8 +74,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
             if (item.nbRecurrence > 0) {
                 item.nbRecurrence--;
-                long ms = item.intervalRecurrence * (item.nbBaseRecurrence - item.nbRecurrence); // 3 - 3
-                addAlarm(context, item, DateTimeManager.castDateTimeToUnixTime(item.dateTime) + ms);
+                long ms = DateTimeManager.castDateTimeToUnixTime(item.dateTime) + (item.intervalRecurrence * (item.nbBaseRecurrence - item.nbRecurrence));
+                item = DateTimeManager.retrieveDataTime(item, ms);
+                addAlarm(context, item,  ms);
             } else {
                 item.status = TodoItemInfo.Status.Overdue;
             }

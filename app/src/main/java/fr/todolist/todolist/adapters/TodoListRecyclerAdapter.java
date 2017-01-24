@@ -27,6 +27,7 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private Activity activity;
     private boolean header;
     private TodoListInterface listener;
+    private String lastDateCategory;
 
     private static final int TYPE_HEADER = 2;
     private static final int TYPE_ITEM = 1;
@@ -36,9 +37,13 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.activity = activity;
         this.header = header;
         this.listener = listener;
+        this.lastDateCategory = "null";
     }
 
     public void clear() {
+        //TodoListRecyclerItemViewHolder.init();
+        lastDateCategory = "null";
+        TodoListRecyclerItemViewHolder.reset();
         this.list.clear();
     }
 
@@ -78,6 +83,7 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             TodoItemInfo item = list.get(position);
 
             ((TodoListRecyclerItemViewHolder)holder).refreshView(item);
+            lastDateCategory = ((TodoListRecyclerItemViewHolder)holder).refreshCategory(item, isFirstOfThisStatus(item), lastDateCategory);
             ((TodoListRecyclerItemViewHolder)holder).refreshTitle(item.title);
             ((TodoListRecyclerItemViewHolder)holder).refreshDate(item);
 
@@ -117,5 +123,14 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private boolean isHeader(int position) {
         return (position == 0 && header);
+    }
+
+    private boolean isFirstOfThisStatus(TodoItemInfo item) {
+        for (TodoItemInfo it : list) {
+            if (it.status == item.status) {
+                return (it == item);
+            }
+        }
+        return (false);
     }
 }

@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -87,13 +88,16 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         validFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("selected", "size: " + selected.size());
                 for (int i = 0 ; i < selected.size() ; ++i) {
                     TodoItemInfo item = selected.get(selected.keyAt(i));
                     item.status = TodoItemInfo.Status.Done;
                     database.updateItem(item);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
-                    updateMode(Mode.Normal);
                 }
+                selected.clear();
+                refreshFragment();
+                //updateMode(Mode.Normal);
             }
         });
 
@@ -106,7 +110,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     database.deleteItem(item.id);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
-                updateMode(Mode.Normal);
+                selected.clear();
+                refreshFragment();
+                //updateMode(Mode.Normal);
             }
         });
 
@@ -198,11 +204,13 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     @Override
     public void addSelection(TodoItemInfo item) {
+        Log.i("selected", "put id " + item.id);
         selected.put(item.id, item);
     }
 
     @Override
     public void deleteSelection(TodoItemInfo item) {
+        Log.i("selected", "delete id " + item.id);
         selected.delete(item.id);
     }
 

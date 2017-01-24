@@ -152,27 +152,32 @@ public class AppDatabase implements SearchInterface {
 
     @Override
     public List<TodoItemInfo> getItemsByDueDateASC() {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_DUE_DATE + ";"));
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS
+                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " ASC ;"));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByDueDateDESC() {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_DUE_DATE + " DESC;"));
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS
+                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " DESC ;"));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByTitle(String toSearch) {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '" + toSearch + "%'"));
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '" + toSearch + "%'"
+                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_FLAG_STATUS + " = " + toSearch.getValue() + ";"));
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_FLAG_STATUS + " = " + toSearch.getValue()
+                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByContent(String toSearch) {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_CONTENT + " LIKE '%" + toSearch + "%'"));
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_CONTENT + " LIKE '%" + toSearch + "%'"
+                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
     }
 
     @Nullable

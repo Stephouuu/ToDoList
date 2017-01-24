@@ -251,7 +251,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final LayoutInflater inflater = getLayoutInflater();
 
-        View view = inflater.inflate(R.layout.recurrence_interval, null);
+        final View view = inflater.inflate(R.layout.recurrence_interval, null);
 
         final Spinner spinner = (Spinner)view.findViewById(R.id.recurrence_unit_time);
         final EditText value = (EditText)view.findViewById(R.id.recurrence_value);
@@ -273,12 +273,20 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                             recurrenceLabelIntervalTextView.setText(selectedType);
 
                             info.intervalRecurrence = DateTimeManager.getMs(Integer.valueOf(v), selectedType);
-                            //Log.i("info", "interval:" + info.intervalRecurrence);
+                            StaticTools.hideKeyboard(getApplicationContext(), view);
                         }
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        StaticTools.hideKeyboard(getApplicationContext(), view);
                     }
                 })
                 .create()
                 .show();
+
+        StaticTools.showKeyboard(getApplicationContext());
     }
 
     private void recurrenceParentOpen() {

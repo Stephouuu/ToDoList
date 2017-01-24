@@ -5,7 +5,6 @@ import android.content.Context;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
-import org.joda.time.Years;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,6 +45,17 @@ public class DateTimeManager {
         }
 
         return (0);
+    }
+
+    public static TodoItemInfo retrieveDataTime(TodoItemInfo info, long ms) {
+        Calendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(ms);
+        info.year = cal.get(Calendar.YEAR);
+        info.month = cal.get(Calendar.MONTH);
+        info.day = cal.get(Calendar.DAY_OF_MONTH);
+        info.hour = cal.get(Calendar.HOUR_OF_DAY);
+        info.minute = cal.get(Calendar.MINUTE);
+        return (info);
     }
 
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
@@ -115,27 +125,32 @@ public class DateTimeManager {
             DateTime today = new DateTime();
             DateTime tomorrow = today.plusDays(1);
 
-            boolean thisYear = Years.yearsBetween(today, dateTime).getYears() == 0;
-
             int nbHours = Hours.hoursBetween(today, dateTime).getHours();
             int nbMinutes = Minutes.minutesBetween(today, dateTime).getMinutes();
+
+            String tmpHour = dateTime.getHourOfDay() + "";
+            String tmpMin = dateTime.getMinuteOfHour() + "";
+            if (tmpHour.length() == 1) {
+                tmpHour = "0" + tmpHour;
+            }
+            if (tmpMin.length() == 1) {
+                tmpMin = "0" + tmpMin;
+            }
 
             if (nbHours == 0) {
                 if (nbMinutes == 0) {
                     ret = context.getString(R.string.date_transform_seconds);
-                } else {
+                } else if (nbMinutes > 0) {
                     ret = context.getString(R.string.date_transform_minutes, nbMinutes);
+                } else if (nbMinutes < 0) {
+                    ret = "Today, " + tmpHour + ":" + tmpMin;
                 }
-            } else if (nbHours < 24) {
-                ret = context.getString(R.string.date_transform_hours, nbHours);
+            } else if (dateTime.toLocalDate().equals(today.toLocalDate())) {
+                ret = "Today, " + tmpHour + ":" + tmpMin;
             } else if (dateTime.toLocalDate().equals(tomorrow.toLocalDate())) {
-                ret = context.getString(R.string.date_transform_tomorrow);
+                ret = "Tomorrow, " + tmpHour + ":" + tmpMin;
             } else {
-                if (thisYear) {
-                    ret = stringDay + " " + stringMonth;
-                } else {
-                    ret = stringDay + " " + stringMonth + " " + stringYear;
-                }
+                ret = stringDay + " " + stringMonth + " " + stringYear + ", " + tmpHour + ":" + tmpMin;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,6 +172,35 @@ public class DateTimeManager {
 
     public static String getMonth(int month) {
         return (MonthArray[month]);
+    }
+
+    public static String getYear(int year) {
+        return (String.valueOf(year));
+    }
+
+    public static boolean isToday(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+
+        return (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month
+                    && cal.get(Calendar.DAY_OF_MONTH) == day);
+    }
+
+    public static boolean isTomorrow(int year, int month, int day) {
+        boolean ret = false;
+        String date = formatDateTime(year, month, day, 0, 0);
+
+        try {
+            Date tmp = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(date);
+            DateTime dateTime = new DateTime(tmp.getTime());
+            DateTime today = new DateTime();
+            DateTime tomorrow = today.plusDays(1);
+
+            ret = dateTime.toLocalDate().equals(tomorrow.toLocalDate());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return (ret);
     }
 
 }
