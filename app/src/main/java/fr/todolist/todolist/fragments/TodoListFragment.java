@@ -2,14 +2,19 @@ package fr.todolist.todolist.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.List;
 
@@ -18,6 +23,7 @@ import fr.todolist.todolist.activities.MainActivity;
 import fr.todolist.todolist.adapters.TodoListRecyclerAdapter;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.HidingScrollListener;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
@@ -77,9 +83,11 @@ public class TodoListFragment extends Fragment {
             @Override
             public void onItemLongClick(View view) {
                 ((TodoListInterface) getActivity()).onItemLongClick(view);
-                /*if (((TodoListInterface) getActivity()).isInSelectionMode()) {
-                    adapter.notifyDataSetChanged();
-                }*/
+            }
+
+            @Override
+            public boolean isSelected(TodoItemInfo item) {
+                return ((TodoListInterface) getActivity()).isSelected(item);
             }
 
             @Override
@@ -97,7 +105,41 @@ public class TodoListFragment extends Fragment {
                 return ((TodoListInterface) getActivity()).isInSelectionMode();
             }
         });
+
         recyclerView.setAdapter(adapter);
+        if (retractableToolbar) {
+            recyclerView.addOnScrollListener(new HidingScrollListener() {
+                @Override
+                public void onHide() {
+                    if (getActivity() == null)
+                        return;
+                    try {
+                        AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
+                        RelativeLayout fab = (RelativeLayout) getActivity().findViewById(R.id.main_fab_parent);
+
+                        toolbar.animate().setDuration(200).translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) fab.getLayoutParams();
+                        int fabBottomMargin = lp.bottomMargin;
+                        fab.animate().translationY(fab.getHeight() + fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onShow() {
+                    if (getActivity() == null)
+                        return;
+
+                    AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
+                    RelativeLayout fab = (RelativeLayout) getActivity().findViewById(R.id.main_fab_parent);
+
+                    toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+                    fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                }
+            });
+        }
 
         if (!retractableToolbar) {
             noItemParent.setVisibility(View.GONE);

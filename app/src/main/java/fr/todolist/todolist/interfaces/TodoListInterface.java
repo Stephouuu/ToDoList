@@ -18,6 +18,7 @@ public interface TodoListInterface {
     void onItemClick(TodoItemInfo item);
     void onItemLongClick(View view);
 
+    boolean isSelected(TodoItemInfo item);
     void addSelection(TodoItemInfo item);
     void deleteSelection(TodoItemInfo item);
 

@@ -203,6 +203,11 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     }
 
     @Override
+    public boolean isSelected(TodoItemInfo item) {
+        return selected.get(item.id) != null;
+    }
+
+    @Override
     public void addSelection(TodoItemInfo item) {
         Log.i("selected", "put id " + item.id);
         selected.put(item.id, item);
@@ -213,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         Log.i("selected", "delete id " + item.id);
         selected.delete(item.id);
     }
+
+
 
     @Override
     public boolean isInSelectionMode() {

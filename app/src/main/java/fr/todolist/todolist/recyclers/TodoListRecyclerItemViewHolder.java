@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import fr.todolist.todolist.R;
@@ -20,10 +19,7 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
-    static private long selectedItem = -1;
-
-    //static private String lastDate = "null";
-    static private TodoItemInfo.Status lastStatus = TodoItemInfo.Status.None;
+    //static private TodoItemInfo.Status lastStatus = TodoItemInfo.Status.None;
 
     private Activity activity;
     private View parent;
@@ -44,7 +40,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
     static public void reset() {
         //lastDate = "null";
-        lastStatus = TodoItemInfo.Status.None;
+        //lastStatus = TodoItemInfo.Status.None;
     }
 
     /*static public void init() {
@@ -54,24 +50,25 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
     public void refreshView(final TodoItemInfo item) {
         final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
 
-        selectCheckBox.setChecked(false);
-        if (item.id == selectedItem) {
-            selectCheckBox.setChecked(true);
-        }
+        selectCheckBox.setChecked(listener.isSelected(item));
+
         if (listener.isInSelectionMode()) {
             parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.VISIBLE);
         } else {
             parent.findViewById(R.id.todo_item_checkbox_parent).setVisibility(View.GONE);
         }
 
-        selectCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        selectCheckBox.setTag(true);
+        selectCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
+                boolean isChecked = (boolean)selectCheckBox.getTag();
                 if (isChecked) {
                     listener.addSelection(item);
                 } else {
                     listener.deleteSelection(item);
                 }
+                selectCheckBox.setTag(!isChecked);
             }
         });
 
@@ -90,20 +87,24 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         parent.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                selectedItem = item.id;
+                //selectedItem = item.id;
+                //selectCheckBox.performClick();
                 listener.onItemLongClick(v);
-                selectCheckBox.performClick();
+                //selectCheckBox.setTag(true);
                 return true;
             }
         });
     }
 
-    public String refreshCategory(TodoItemInfo item, boolean isFirst, String lastDateCategory) {
+    //public String refreshCategory(TodoItemInfo item, boolean isFirst, String lastDateCategory) {
+    public void refreshCategory(TodoItemInfo item, boolean isFirstStatus, boolean isFirstDate) {
         TextView textView = (TextView) parent.findViewById(R.id.todo_preview_category);
         String text = DateTimeManager.getDay(item.day) + " " + DateTimeManager.getMonth(item.month)
                 + " " + DateTimeManager.getYear(item.year);
 
-        if (isFirst) {
+        if (isFirstStatus) {
+            textView.setVisibility(View.VISIBLE);
+
             if (item.status == TodoItemInfo.Status.Overdue) {
                 text = activity.getString(R.string.expired);
                 textView.setTextColor(ContextCompat.getColor(activity, R.color.red));
@@ -118,18 +119,21 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
                 }
                 textView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
             }
-        } else {
-            if (item.status == TodoItemInfo.Status.ToDo) {
-                if (DateTimeManager.isToday(item.year, item.month, item.day)) {
-                    text = activity.getString(R.string.today);
-                } else if (DateTimeManager.isTomorrow(item.year, item.month, item.day)) {
-                    text = activity.getString(R.string.tomorrow);
-                }
+            textView.setText(text);
+        } else if (isFirstDate) {
+            textView.setVisibility(View.VISIBLE);
+            if (DateTimeManager.isToday(item.year, item.month, item.day)) {
+                text = activity.getString(R.string.today);
+            } else if (DateTimeManager.isTomorrow(item.year, item.month, item.day)) {
+                text = activity.getString(R.string.tomorrow);
             }
             textView.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary100));
+            textView.setText(text);
+        } else {
+            textView.setVisibility(View.GONE);
         }
 
-        if (lastStatus != TodoItemInfo.Status.ToDo && (item.status == TodoItemInfo.Status.Overdue || item.status == TodoItemInfo.Status.Done)) {
+        /*if (lastStatus != TodoItemInfo.Status.ToDo && (item.status == TodoItemInfo.Status.Overdue || item.status == TodoItemInfo.Status.Done)) {
             if (isFirst) {
                 lastStatus = item.status;
                 textView.setVisibility(View.VISIBLE);
@@ -145,7 +149,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             textView.setVisibility(View.GONE);
         }
 
-        return lastDateCategory;
+        return lastDateCategory;*/
     }
 
     public void refreshTitle(String title) {
@@ -166,7 +170,6 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             } else if (item.status == TodoItemInfo.Status.Overdue) {
                 dateTextView.setTextColor(ContextCompat.getColor(activity, R.color.red));
             }
-            //dateTextView.setText(item.status.toString());
         }
     }
 

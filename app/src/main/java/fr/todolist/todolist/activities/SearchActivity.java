@@ -199,6 +199,11 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     }
 
     @Override
+    public boolean isSelected(TodoItemInfo item) {
+        return false;
+    }
+
+    @Override
     public void addSelection(TodoItemInfo item) {
 
     }
