@@ -111,4 +111,9 @@
         <item name="android:homeAsUpIndicator">@mipmap/menu_icon_back</item>
     </style>
 
+    <!-- SplashScreen Theme -->
+    <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
 </resources>

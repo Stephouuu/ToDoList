@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Do It Faggot</string>
+    <string name="app_name">ToDoList</string>
 
     <string name="home_page">To Do</string>
     <string name="search">Search</string>
