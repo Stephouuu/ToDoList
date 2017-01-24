@@ -53,6 +53,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         database.open();
 
         if (item.remind) {
+            //int priority = NotificationCompat.PRIORITY_MAX;
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -61,7 +62,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     .setSmallIcon(R.drawable.todo_icon)
                     .setContentTitle(title)
                     .setContentText(content)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setPriority(item.priority)
                     .setTicker(content);
 
             Intent intent = new Intent(context, MainActivity.class);

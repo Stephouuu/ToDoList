@@ -128,24 +128,19 @@
 
                         <TextView
                             android:gravity="center_vertical"
-                            android:text="Repeat"
+                            android:text="@string/priority"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />
 
                         <EditText
-                            android:id="@+id/add_item_recurrence_time"
+                            android:hint="@string/priority"
+                            android:id="@+id/add_item_priority"
                             android:gravity="center"
                             android:theme="@style/App_EditTextStyle"
-                            android:hint="times"
+                            android:focusable="false"
+                            android:clickable="true"
                             android:inputType="numberDecimal"
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:gravity="center"
-                            android:text="Time(s)"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />
@@ -159,13 +154,45 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="Intervals "
+                            android:gravity="center_vertical"
+                            android:text="@string/repeat"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />
 
                         <EditText
-                            android:hint="interval"
+                            android:id="@+id/add_item_recurrence_time"
+                            android:gravity="center"
+                            android:theme="@style/App_EditTextStyle"
+                            android:hint="@string/times"
+                            android:inputType="numberDecimal"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:gravity="center"
+                            android:text="@string/times"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:weightSum="3"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/interval"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content" />
+
+                        <EditText
+                            android:hint="@string/interval"
                             android:id="@+id/add_item_recurrence_interval"
                             android:gravity="center"
                             android:theme="@style/App_EditTextStyle"
@@ -179,7 +206,7 @@
                         <TextView
                             android:id="@+id/add_item_recurrence_interval_label"
                             android:gravity="center"
-                            android:text="Second(s)"
+                            android:text="@string/secondes"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content" />

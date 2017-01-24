@@ -61,4 +61,16 @@
         <item>Hour(s)</item>
         <item>Day(s)</item>
     </string-array>
+
+    <string name="interval">Interval</string>
+    <string name="value">Value</string>
+    <string name="repeat">Repeat</string>
+    <string name="times">Time(s)</string>
+    <string name="secondes">Seconde(s)</string>
+
+    <string name="priority">Priority</string>
+    <string name="priority_default">Default</string>
+    <string name="priority_high">High</string>
+    <string name="priority_max">Max</string>
+
 </resources>

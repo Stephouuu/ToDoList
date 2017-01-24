@@ -23,7 +23,6 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    //private List<TodoItemInfo> list;
     private List<TodoItemInfo> listOverdue;
     private List<TodoItemInfo> listDone;
     private List<TodoItemInfo> listTodo;
@@ -32,13 +31,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private Activity activity;
     private boolean header;
     private TodoListInterface listener;
-    //private String lastDateCategory;
 
     private static final int TYPE_HEADER = 2;
     private static final int TYPE_ITEM = 1;
 
     public TodoListRecyclerAdapter(Activity activity, boolean header, TodoListInterface listener) {
-        //this.list = new ArrayList<>();
         this.listOverdue = new ArrayList<>();
         this.listDone = new ArrayList<>();
         this.listTodo = new ArrayList<>();
@@ -47,14 +44,9 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.activity = activity;
         this.header = header;
         this.listener = listener;
-        //this.lastDateCategory = "null";
     }
 
     public void clear() {
-        //TodoListRecyclerItemViewHolder.init();
-        //lastDateCategory = "null";
-        //TodoListRecyclerItemViewHolder.reset();
-        //this.list.clear();
         this.listOverdue.clear();
         this.listDone.clear();
         this.listTodo.clear();
@@ -65,7 +57,6 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void addList(List<TodoItemInfo> items) {
-        //this.list.addAll(items);
         clear();
         List<TodoItemInfo> currList = new ArrayList<>();
         String prevDate = "null";

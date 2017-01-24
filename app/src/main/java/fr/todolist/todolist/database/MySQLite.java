@@ -36,6 +36,9 @@ public class MySQLite extends SQLiteOpenHelper {
     public static final String TODO_COL_BASE_NB_RECURRENCE = "nbBaseRecurrence";
     public static final int TODO_NUM_COL_BASE_NB_RECURRENCE = 8;
 
+    public static final String TODO_COL_PRIORITY = "priority";
+    public static final int TODO_NUM_COL_PRIORITY = 9;
+
     private static final String TODO_TABLE = "CREATE TABLE " + TODO_TABLE_NAME + " ("
             + TODO_COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TODO_COL_TITLE + " TEXT NOT NULL, "
@@ -45,7 +48,8 @@ public class MySQLite extends SQLiteOpenHelper {
             + TODO_COL_REMIND + " INTEGER DEFAULT 0, "
             + TODO_COL_NB_RECURRENCE + " INTEGER DEFAULT 0, "
             + TODO_COL_INTERVAL + " INTEGER DEFAULT 0, "
-            + TODO_COL_BASE_NB_RECURRENCE + " INTEGER DEFAULT 0);";
+            + TODO_COL_BASE_NB_RECURRENCE + " INTEGER DEFAULT 0, "
+            + TODO_COL_PRIORITY + " INTEGER DEFAULT 0);";
 
 
     public static final String ALARM_TABLE_NAME = "Alarm";

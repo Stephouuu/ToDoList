@@ -8,6 +8,7 @@
     <color name="colorPrimary75">#BF3F51B5</color>
     <color name="colorPrimary50">#803F51B5</color>
     <color name="colorPrimary25">#403F51B5</color>
+    <color name="colorPrimary10">#1A3F51B5</color>
 
     <color name="grey_light_100">#FF929292</color>
     <color name="grey_light_50">#88929292</color>
