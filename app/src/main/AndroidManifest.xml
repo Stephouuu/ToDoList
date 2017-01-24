@@ -30,7 +30,6 @@
 
         <activity android:name=".activities.AddTodoItemActivity" />
         <activity android:name=".activities.SearchActivity" />
-        <activity android:name=".activities.ConsultationActivity" />
 
         <receiver android:name=".receivers.AlarmReceiver" />
 

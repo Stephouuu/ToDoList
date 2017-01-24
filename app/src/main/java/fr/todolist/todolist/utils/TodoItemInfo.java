@@ -40,6 +40,7 @@ public class TodoItemInfo implements Parcelable {
     public int nbRecurrence;
     public int nbBaseRecurrence;
     public long intervalRecurrence;
+    public String intervalType;
     public int priority;
 
     public TodoItemInfo() {
@@ -57,6 +58,7 @@ public class TodoItemInfo implements Parcelable {
         nbRecurrence = 0;
         nbBaseRecurrence = 0;
         intervalRecurrence = 0;
+        intervalType = "Second(s)";
         priority = 0;
     }
 
@@ -81,6 +83,7 @@ public class TodoItemInfo implements Parcelable {
         out.writeInt(nbRecurrence);
         out.writeInt(nbBaseRecurrence);
         out.writeLong(intervalRecurrence);
+        out.writeString(intervalType);
         out.writeInt(priority);
     }
 
@@ -112,6 +115,7 @@ public class TodoItemInfo implements Parcelable {
         nbRecurrence = in.readInt();
         nbBaseRecurrence = in.readInt();
         intervalRecurrence = in.readLong();
+        intervalType = in.readString();
         priority = in.readInt();
     }
 

@@ -107,6 +107,22 @@ public class DateTimeManager {
         return (ret);
     }
 
+    public static long getValueFromMs(String type, long value) {
+        long ret = 0;
+
+        if (type.equals("Second(s)")) {
+            ret = value / 1000;
+        } else if (type.equals("Minute(s)")) {
+            ret = value / 1000 / 60;
+        } else if (type.equals("Hour(s)")) {
+            ret = value / 1000 / 60 / 60;
+        } else if (type.equals("Day(s)")) {
+            ret = value / 1000 / 60 / 60 / 24;
+        }
+
+        return (ret);
+    }
+
     public static boolean isDateTimeValid(long time) {
         return (Calendar.getInstance().getTimeInMillis() < time);
     }

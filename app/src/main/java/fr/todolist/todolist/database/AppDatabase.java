@@ -77,6 +77,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
         values.put(MySQLite.TODO_COL_NB_RECURRENCE, item.nbRecurrence);
         values.put(MySQLite.TODO_COL_INTERVAL, item.intervalRecurrence);
+        values.put(MySQLite.TODO_COL_INTERVAL_TYPE, item.intervalType);
         values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
         values.put(MySQLite.TODO_COL_PRIORITY, item.priority);
 
@@ -105,6 +106,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_REMIND, item.remind?1:0);
         values.put(MySQLite.TODO_COL_NB_RECURRENCE, item.nbRecurrence);
         values.put(MySQLite.TODO_COL_INTERVAL, item.intervalRecurrence);
+        values.put(MySQLite.TODO_COL_INTERVAL_TYPE, item.intervalType);
         values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
         values.put(MySQLite.TODO_COL_PRIORITY, item.priority);
 
@@ -245,6 +247,7 @@ public class AppDatabase implements SearchInterface {
         item.remind = cursor.getInt(MySQLite.TODO_NUM_COL_REMIND) == 1;
         item.nbRecurrence = cursor.getInt(MySQLite.TODO_NUM_COL_NB_RECURRENCE);
         item.intervalRecurrence = cursor.getLong(MySQLite.TODO_NUM_COL_INTERVAL);
+        item.intervalType = cursor.getString(MySQLite.TODO_NUM_COL_INTERVAL_TYPE);
         item.nbBaseRecurrence = cursor.getInt(MySQLite.TODO_NUM_COL_BASE_NB_RECURRENCE);
         item.priority = cursor.getInt(MySQLite.TODO_NUM_COL_PRIORITY);
 

@@ -1,6 +1,7 @@
 package fr.todolist.todolist.activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -34,7 +35,17 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class AddTodoItemActivity extends AppCompatActivity implements AddTodoItemInterface {
 
+    public enum Mode {
+        Add,
+        Consultation,
+        Edit,
+    }
+
+    static public final String EXTRA_MODE = "mode";
+    static public final String EXTRA_ITEM = "item";
+
     private View root;
+    private Mode mode;
 
     private EditText titleEditText;
     private SwitchCompat reminderSwitchCompat;
@@ -52,6 +63,31 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private EditText recurrenceIntervalEditText;
     private TextView recurrenceLabelIntervalTextView;
 
+    static public void setExtraMode(Intent intent, Mode value) {
+        intent.putExtra(EXTRA_MODE, value.ordinal());
+    }
+
+    static public Mode getExtraMode(Intent intent) {
+        int mode = intent.getIntExtra(EXTRA_MODE, Mode.Add.ordinal());
+        Mode ret = Mode.Add;
+        if (mode == Mode.Add.ordinal()) {
+            ret = Mode.Add;
+        } else if (mode == Mode.Consultation.ordinal()) {
+            ret = Mode.Consultation;
+        } else if (mode == Mode.Edit.ordinal()) {
+            ret = Mode.Edit;
+        }
+        return (ret);
+    }
+
+    static public void setExtraItem(Intent intent, TodoItemInfo item) {
+        intent.putExtra(EXTRA_ITEM, item);
+    }
+
+    static public TodoItemInfo getExtraItem(Intent intent) {
+        return (intent.getParcelableExtra(EXTRA_ITEM));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +95,13 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
         database = new AppDatabase(getApplicationContext());
         database.open();
-        info = new TodoItemInfo();
+
+        info = getExtraItem(getIntent());
+        if (info == null) {
+            info = new TodoItemInfo();
+        }
+
+        mode = getExtraMode(getIntent());
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -85,7 +127,13 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onValid();
+                if (mode == Mode.Add || mode == Mode.Edit) {
+                    onValid();
+                } else {
+                    mode = Mode.Edit;
+                    childSetEnabled(true);
+                    addFab.setImageResource(R.mipmap.ic_valid_white);
+                }
             }
         });
 
@@ -150,7 +198,15 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             }
         });
 
-        StaticTools.showKeyboard(getApplicationContext());
+        if (mode == Mode.Consultation) {
+            addFab.setImageResource(R.mipmap.menu_icon_edit);
+            refreshEditMode();
+        } else if (mode == Mode.Add) {
+            addFab.setImageResource(R.mipmap.menu_icon_send);
+            StaticTools.showKeyboard(getApplicationContext());
+        } else if (mode == Mode.Edit) {
+            addFab.setImageResource(R.mipmap.ic_valid_white);
+        }
     }
 
     @Override
@@ -165,6 +221,39 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     public void onPause() {
         super.onPause();
         StaticTools.hideKeyboard(getApplicationContext(), root);
+    }
+
+    private void refreshEditMode() {
+        titleEditText.setText(info.title);
+        contentEditText.setText(info.content);
+        onDateSet(info.year, info.month, info.day);
+        onTimeSet(info.hour, info.minute);
+        reminderSwitchCompat.setChecked(info.remind);
+
+        if (info.priority == NotificationCompat.PRIORITY_DEFAULT) {
+            priorityEditText.setText(getString(R.string.priority_default));
+        } else if (info.priority == NotificationCompat.PRIORITY_HIGH) {
+            priorityEditText.setText(getString(R.string.priority_high));
+        } else if (info.priority == NotificationCompat.PRIORITY_MAX) {
+            priorityEditText.setText(getString(R.string.priority_max));
+        }
+
+        recurrenceTimeEditText.setText(String.valueOf(info.nbRecurrence + 1));
+        recurrenceIntervalEditText.setText(String.valueOf(DateTimeManager.getValueFromMs(info.intervalType, info.intervalRecurrence)));
+        recurrenceLabelIntervalTextView.setText(info.intervalType);
+
+        childSetEnabled(false);
+    }
+
+    private void childSetEnabled(boolean value) {
+        titleEditText.setEnabled(value);
+        contentEditText.setEnabled(value);
+        dateEditText.setEnabled(value);
+        timeEditText.setEnabled(value);
+        reminderSwitchCompat.setEnabled(value);
+        priorityEditText.setEnabled(value);
+        recurrenceTimeEditText.setEnabled(value);
+        recurrenceIntervalEditText.setEnabled(value);
     }
 
     private boolean confirm() {
@@ -248,11 +337,22 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             long time = DateTimeManager.castDateTimeToUnixTime(info.dateTime);
 
             if (DateTimeManager.isDateTimeValid(time)) {
-                info = database.insertItem(info);
-                AlarmReceiver.addAlarm(this, info, time);
-                database.close();
-                setResult(RESULT_OK);
-                finish();
+                if (mode == Mode.Add) {
+                    info = database.insertItem(info);
+                    AlarmReceiver.addAlarm(this, info, time);
+                    database.close();
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    info.status = TodoItemInfo.Status.ToDo;
+                    database.updateItem(info);
+                    AlarmReceiver.deleteAlarm(this, (int)info.id);
+                    AlarmReceiver.addAlarm(this, info, time);
+                    childSetEnabled(false);
+                    mode = Mode.Consultation;
+                    addFab.setImageResource(R.mipmap.menu_icon_edit);
+                    Toast.makeText(this, R.string.edit_save, Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "The due date must be in the future", Toast.LENGTH_SHORT).show();
             }
@@ -277,14 +377,13 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String selectedType = spinner.getSelectedItem().toString();
+                        info.intervalType = spinner.getSelectedItem().toString();
                         String v = value.getText().toString();
 
                         if (v.length() > 0) {
                             recurrenceIntervalEditText.setText(v);
-                            recurrenceLabelIntervalTextView.setText(selectedType);
-
-                            info.intervalRecurrence = DateTimeManager.getMs(Integer.valueOf(v), selectedType);
+                            recurrenceLabelIntervalTextView.setText(info.intervalType);
+                            info.intervalRecurrence = DateTimeManager.getMs(Integer.valueOf(v), info.intervalType);
                             StaticTools.hideKeyboard(getApplicationContext(), view);
                         }
                     }
@@ -335,7 +434,6 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                     }
                 })
                 .create()

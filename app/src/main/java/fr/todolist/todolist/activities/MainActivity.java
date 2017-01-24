@@ -95,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     database.updateItem(item);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
-                selected.clear();
-                refreshFragment();
-                //updateMode(Mode.Normal);
+                //selected.clear();
+                //refreshFragment();
+                updateMode(Mode.Normal);
             }
         });
 
@@ -110,9 +110,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     database.deleteItem(item.id);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
-                selected.clear();
-                refreshFragment();
-                //updateMode(Mode.Normal);
+                //selected.clear();
+                //refreshFragment();
+                updateMode(Mode.Normal);
             }
         });
 
@@ -191,8 +191,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     @Override
     public void onItemClick(TodoItemInfo item) {
-        Intent intent = new Intent(getApplicationContext(), ConsultationActivity.class);
-        ConsultationActivity.setExtraItem(intent, item);
+        Intent intent = new Intent(getApplicationContext(), AddTodoItemActivity.class);
+        AddTodoItemActivity.setExtraMode(intent, AddTodoItemActivity.Mode.Consultation);
+        AddTodoItemActivity.setExtraItem(intent, item);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
