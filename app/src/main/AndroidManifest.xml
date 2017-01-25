@@ -31,7 +31,7 @@
         </activity>
         <activity android:name=".activities.MainActivity"/>
         <activity android:name=".activities.AddTodoItemActivity"/>
-        <activity android:name=".activities.SearchActivity"/>
+        <activity android:name=".activities.SearchActivity" android:windowSoftInputMode="adjustPan"/>
 
         <receiver android:name=".receivers.AlarmReceiver" />
 

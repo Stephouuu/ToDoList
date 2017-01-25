@@ -15,7 +15,7 @@ public interface SearchInterface {
     TodoItemFilter getFilter();
     SortingInfo getSortingInfo();
     List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date);
-    List<TodoItemInfo> getItemsByTitle(String toSearch);
-    List<TodoItemInfo> getItemsByContent(String toSearch);
+    List<TodoItemInfo> getItemsByTitle(String toSearch, SortingInfo.Type date);
+    List<TodoItemInfo> getItemsByContent(String toSearch, SortingInfo.Type date);
 
 }

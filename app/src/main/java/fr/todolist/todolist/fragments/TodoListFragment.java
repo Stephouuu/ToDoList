@@ -3,6 +3,7 @@ package fr.todolist.todolist.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.activities.MainActivity;
+import fr.todolist.todolist.activities.SearchActivity;
 import fr.todolist.todolist.adapters.TodoListRecyclerAdapter;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
@@ -35,10 +37,8 @@ public class TodoListFragment extends Fragment {
     public static final String EXTRA_SEARCH = "todolist.search.param";
 
     public enum Mode {
-        DueDateASC,
-        DueDateDESC,
+        DueDate,
         Title,
-        Status,
         Content
     }
 
@@ -58,10 +58,10 @@ public class TodoListFragment extends Fragment {
         super.onCreate(state);
         Bundle args = getArguments();
         if (args != null) {
-            mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDateASC)));
+            mode = Mode.valueOf(args.getString(EXTRA_MODE, String.valueOf(Mode.DueDate)));
             searchParameter = args.getString(EXTRA_SEARCH);
         } else {
-            mode = Mode.DueDateASC;
+            mode = Mode.DueDate;
         }
     }
 
@@ -73,7 +73,7 @@ public class TodoListFragment extends Fragment {
         noItemParent = (LinearLayout)view.findViewById(R.id.todo_fragment_parent_noitem);
         noItemDrawable = (ImageView)view.findViewById(R.id.check_list);
 
-        retractableToolbar = getActivity() instanceof MainActivity;
+        retractableToolbar = getActivity() instanceof MainActivity || getActivity() instanceof SearchActivity;
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new TodoListRecyclerAdapter(getActivity(), retractableToolbar, new TodoListInterface() {
             @Override
@@ -112,9 +112,8 @@ public class TodoListFragment extends Fragment {
             recyclerView.addOnScrollListener(new HidingScrollListener() {
                 @Override
                 public void onHide() {
-                    if (getActivity() == null)
-                        return;
-                    try {
+                    if (getActivity() instanceof  MainActivity) {
+
                         AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
                         RelativeLayout fab = (RelativeLayout) getActivity().findViewById(R.id.main_fab_parent);
 
@@ -123,26 +122,39 @@ public class TodoListFragment extends Fragment {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) fab.getLayoutParams();
                         int fabBottomMargin = lp.bottomMargin;
                         fab.animate().translationY(fab.getHeight() + fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+
+                    } else {
+                        AppBarLayout toolbar = (AppBarLayout)getActivity().findViewById(R.id.appBarLayout);
+                        FloatingActionButton fab = (FloatingActionButton)getActivity().findViewById(R.id.search_sort_fab);
+
+                        toolbar.animate().setDuration(200).translationY(-toolbar.getHeight() / 2).setInterpolator(new AccelerateInterpolator(2));
+
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) fab.getLayoutParams();
+                        int fabBottomMargin = lp.bottomMargin;
+                        fab.animate().translationY(fab.getHeight() + fabBottomMargin).setInterpolator(new AccelerateInterpolator(2)).start();
                     }
                 }
 
                 @Override
                 public void onShow() {
-                    if (getActivity() == null)
-                        return;
+                    if (getActivity() instanceof MainActivity) {
+                        AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
+                        RelativeLayout fab = (RelativeLayout) getActivity().findViewById(R.id.main_fab_parent);
 
-                    AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
-                    RelativeLayout fab = (RelativeLayout) getActivity().findViewById(R.id.main_fab_parent);
+                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+                        fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                    } else {
+                        AppBarLayout toolbar = (AppBarLayout) getActivity().findViewById(R.id.appBarLayout);
+                        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.search_sort_fab);
 
-                    toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-                    fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+                        fab.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                    }
                 }
             });
         }
 
-        if (!retractableToolbar) {
+        if (getActivity() instanceof SearchActivity) {
             noItemParent.setVisibility(View.GONE);
         }
 
@@ -181,20 +193,14 @@ public class TodoListFragment extends Fragment {
         SortingInfo sorting = ((SearchInterface) getActivity()).getSortingInfo();
         List<TodoItemInfo> list = null;
         switch (mode) {
-            case DueDateASC:
+            case DueDate:
                 list = ((SearchInterface) getActivity()).getItemsByDueDate(sorting.date);
                 break;
-            /*case DueDateDESC:
-                list = ((SearchInterface) getActivity()).getItemsByDueDateDESC();
-                break;*/
             case Title:
-                list = ((SearchInterface) getActivity()).getItemsByTitle(searchParameter);
+                list = ((SearchInterface) getActivity()).getItemsByTitle(searchParameter, sorting.date);
                 break;
-            /*case Status:
-                list = ((SearchInterface) getActivity()).getItemsByStatus(TodoItemInfo.Status.valueOf(searchParameter));
-                break;*/
             case Content:
-                list = ((SearchInterface) getActivity()).getItemsByContent(searchParameter);
+                list = ((SearchInterface) getActivity()).getItemsByContent(searchParameter, sorting.date);
                 break;
         }
         return (list);

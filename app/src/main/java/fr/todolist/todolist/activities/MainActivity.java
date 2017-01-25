@@ -1,15 +1,11 @@
 package fr.todolist.todolist.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.LongSparseArray;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,17 +14,16 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.List;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.database.AppDatabase;
+import fr.todolist.todolist.dialogs.FilterSortAlertDialog;
 import fr.todolist.todolist.fragments.TodoListFragment;
+import fr.todolist.todolist.interfaces.FilterSortDialogInterface;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.receivers.AlarmReceiver;
@@ -92,15 +87,12 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         validFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("selected", "size: " + selected.size());
                 for (int i = 0 ; i < selected.size() ; ++i) {
                     TodoItemInfo item = selected.get(selected.keyAt(i));
                     item.status = TodoItemInfo.Status.Done;
                     database.updateItem(item);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
-                //selected.clear();
-                //refreshFragment();
                 updateMode(Mode.Normal);
             }
         });
@@ -114,8 +106,6 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
                     database.deleteItem(item.id);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
-                //selected.clear();
-                //refreshFragment();
                 updateMode(Mode.Normal);
             }
         });
@@ -149,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
 
-        menu.add(getString(R.string.filter));
+        //menu.add(getString(R.string.filter));
 
         return true;
     }
@@ -161,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             startActivity(search);
             overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             return true;
-        } else if (item.getTitle().equals(getString(R.string.filter))) {
+        /*} else if (item.getTitle().equals(getString(R.string.filter))) {
             createFilterDialogBox();
-            return true;
+            return true;*/
         } else if (item.getTitle().equals(getString(R.string.sorting))) {
             createSortingDialogBox();
             return true;
@@ -217,17 +207,13 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     @Override
     public void addSelection(TodoItemInfo item) {
-        Log.i("selected", "put id " + item.id);
         selected.put(item.id, item);
     }
 
     @Override
     public void deleteSelection(TodoItemInfo item) {
-        Log.i("selected", "delete id " + item.id);
         selected.delete(item.id);
     }
-
-
 
     @Override
     public boolean isInSelectionMode() {
@@ -253,115 +239,22 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         this.mode = mode;
     }
 
-    private void createFilterDialogBox() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final LayoutInflater inflater = getLayoutInflater();
-
-        View view = inflater.inflate(R.layout.filter_dialog_fragment, null);
-
-        final CheckedTextView inProgress = (CheckedTextView)view.findViewById(R.id.checkbox_inprogress);
-        final CheckedTextView ok = (CheckedTextView)view.findViewById(R.id.checkbox_ok);
-        final CheckedTextView expired = (CheckedTextView)view.findViewById(R.id.checkbox_expired);
-
-        builder.setView(view)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Preferences.setHomePageFilter(getApplicationContext(), filter);
-                        refreshFragment();
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        refreshFragment();
-                    }
-                })
-                .create()
-                .show();
-
-        if (filter.hasFlags(TodoItemFilter.STATUS_TODO)) {
-            inProgress.toggle();
-        }
-        if (filter.hasFlags(TodoItemFilter.STATUS_OK)) {
-            ok.toggle();
-        }
-        if (filter.hasFlags(TodoItemFilter.STATUS_EXPIRED)) {
-            expired.toggle();
-        }
-
-        inProgress.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                inProgress.toggle();
-                if (inProgress.isChecked()) {
-                    filter.addFlags(TodoItemFilter.STATUS_TODO);
-                } else {
-                    filter.deleteFlags(TodoItemFilter.STATUS_TODO);
-                }
-            }
-        });
-
-        ok.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ok.toggle();
-                if (ok.isChecked()) {
-                    filter.addFlags(TodoItemFilter.STATUS_OK);
-                } else {
-                    filter.deleteFlags(TodoItemFilter.STATUS_OK);
-                }
-            }
-        });
-
-        expired.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                expired.toggle();
-                if (expired.isChecked()) {
-                    filter.addFlags(TodoItemFilter.STATUS_EXPIRED);
-                } else {
-                    filter.deleteFlags(TodoItemFilter.STATUS_EXPIRED);
-                }
-            }
-        });
-    }
-
     private void createSortingDialogBox() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final LayoutInflater inflater = getLayoutInflater();
-
-        View view = inflater.inflate(R.layout.sorting_dialog_fragment, null);
-
-        final Spinner dateSpinner = (Spinner)view.findViewById(R.id.sorting_date_spinner);
-
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
-                R.array.sorting_order, android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dateSpinner.setAdapter(adapter2);
-        dateSpinner.setSelection(sorting.date.ordinal());
-
-        builder.setView(view)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        final FilterSortAlertDialog dialog = new FilterSortAlertDialog(this, filter, sorting,
+                new FilterSortDialogInterface() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int date = dateSpinner.getSelectedItemPosition();
-
-                        if (date == SortingInfo.Type.Ascendant.ordinal()) {
-                            sorting.date = SortingInfo.Type.Ascendant;
-                        } else {
-                            sorting.date = SortingInfo.Type.Descendant;
-                        }
-
-                        Preferences.setHomePageSorting(getApplicationContext(), sorting);
+                    public void onPositiveButtonClick(TodoItemFilter filter, SortingInfo sortingInfo) {
+                        MainActivity.this.filter = filter;
+                        sorting = sortingInfo;
                         refreshFragment();
                     }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+
                     @Override
-                    public void onDismiss(DialogInterface dialog) {
+                    public void onDismiss() {
                         refreshFragment();
                     }
-                })
-                .create()
-                .show();
+                });
+        dialog.setButtons().create().show();
     }
 
     private void refreshFragment() {
@@ -407,13 +300,13 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByTitle(String toSearch) {
-        return (database.getItemsByTitle(toSearch));
+    public List<TodoItemInfo> getItemsByTitle(String toSearch, SortingInfo.Type date) {
+        return (database.getItemsByTitle(toSearch, date));
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByContent(String toSearch) {
-        return (database.getItemsByContent(toSearch));
+    public List<TodoItemInfo> getItemsByContent(String toSearch, SortingInfo.Type date) {
+        return (database.getItemsByContent(toSearch, date));
     }
 
     private void setMainFabMode(MainFabMode fabMode) {

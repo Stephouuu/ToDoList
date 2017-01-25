@@ -83,4 +83,6 @@
         <item>Ascendant</item>
         <item>Descendant</item>
     </string-array>
+
+    <string name="ok">OK</string>
 </resources>

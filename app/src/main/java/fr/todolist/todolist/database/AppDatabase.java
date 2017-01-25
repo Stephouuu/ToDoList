@@ -157,19 +157,21 @@ public class AppDatabase implements SearchInterface {
     public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
         String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
         return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS
-                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + " ;"));
+                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByTitle(String toSearch) {
+    public List<TodoItemInfo> getItemsByTitle(String toSearch, SortingInfo.Type date) {
+        String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
         return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '" + toSearch + "%'"
-                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
+                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByContent(String toSearch) {
+    public List<TodoItemInfo> getItemsByContent(String toSearch, SortingInfo.Type date) {
+        String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
         return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_CONTENT + " LIKE '%" + toSearch + "%'"
-                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
+                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC,"+ MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
     @Nullable

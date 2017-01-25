@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/SearchTheme"
@@ -9,67 +9,104 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/main_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/search"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
-
-        </android.support.v7.widget.Toolbar>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/search_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextAppearance="@style/App_TabTextAppearance"
-            app:tabIndicatorColor="@color/colorPrimary100"
-            app:tabMode="fixed"/>
-
-    </android.support.design.widget.AppBarLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/search_view_pager"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="?attr/actionBarSize">
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+            </android.support.v7.widget.Toolbar>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/search_tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabTextAppearance="@style/App_TabTextAppearance"
+                app:tabIndicatorColor="@color/colorPrimary100"
+                app:tabMode="fixed"/>
+
+        </android.support.design.widget.AppBarLayout>
 
         <RelativeLayout
-            android:id="@+id/search_intro_container"
-            android:background="@color/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_centerInParent="true"
-                android:contentDescription="@null"
-                android:src="@mipmap/ic_search_profil"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/search_view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/search_sort_fab"
+                android:layout_margin="@dimen/fab_margin"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
+                android:src="@mipmap/sort"
+                app:backgroundTint="@color/colorPrimary100"
+                app:borderWidth="0dp"
+                app:elevation="0dp"
+                app:rippleColor="@color/colorPrimaryDark" />
 
         </RelativeLayout>
 
     </FrameLayout>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/popup_sort_parent"
+        android:visibility="gone"
+        android:background="@color/black60"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/popup_sort"
+            android:background="@android:drawable/dialog_holo_light_frame"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/filter_dialog_fragment" />
+            <include layout="@layout/sorting_dialog_fragment" />
+
+            <Button
+                android:id="@+id/popup_sort_ok"
+                android:layout_gravity="end"
+                android:textColor="@color/colorPrimary100"
+                android:theme="@android:style/Widget.Button"
+                android:background="@android:color/transparent"
+                android:text="@string/ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

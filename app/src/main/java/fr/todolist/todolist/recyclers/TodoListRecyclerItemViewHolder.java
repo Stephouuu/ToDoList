@@ -19,8 +19,6 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 
 public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
-    //static private TodoItemInfo.Status lastStatus = TodoItemInfo.Status.None;
-
     private Activity activity;
     private View parent;
     private TodoListInterface listener;
@@ -30,22 +28,11 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         this.activity = activity;
         this.parent = parent;
         this.listener = listener;
-
-        //init();
     }
 
     public static TodoListRecyclerItemViewHolder newInstance(Activity activity, View parent, TodoListInterface listener) {
         return (new TodoListRecyclerItemViewHolder(activity, parent, listener));
     }
-
-    static public void reset() {
-        //lastDate = "null";
-        //lastStatus = TodoItemInfo.Status.None;
-    }
-
-    /*static public void init() {
-        lastStatus = TodoItemInfo.Status.None;
-    }*/
 
     public void refreshView(final TodoItemInfo item) {
         final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
@@ -87,16 +74,12 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         parent.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                //selectedItem = item.id;
-                //selectCheckBox.performClick();
                 listener.onItemLongClick(v);
-                //selectCheckBox.setTag(true);
                 return true;
             }
         });
     }
 
-    //public String refreshCategory(TodoItemInfo item, boolean isFirst, String lastDateCategory) {
     public void refreshCategory(TodoItemInfo item, boolean isFirstStatus, boolean isFirstDate) {
         TextView textView = (TextView) parent.findViewById(R.id.todo_preview_category);
         String text = DateTimeManager.getDay(item.day) + " " + DateTimeManager.getMonth(item.month)
@@ -132,24 +115,6 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         } else {
             textView.setVisibility(View.GONE);
         }
-
-        /*if (lastStatus != TodoItemInfo.Status.ToDo && (item.status == TodoItemInfo.Status.Overdue || item.status == TodoItemInfo.Status.Done)) {
-            if (isFirst) {
-                lastStatus = item.status;
-                textView.setVisibility(View.VISIBLE);
-                textView.setText(text);
-            } else {
-                textView.setVisibility(View.GONE);
-            }
-        } else if (!lastDateCategory.equals(text)) {
-            lastDateCategory = text;
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(text);
-        } else {
-            textView.setVisibility(View.GONE);
-        }
-
-        return lastDateCategory;*/
     }
 
     public void refreshTitle(String title) {

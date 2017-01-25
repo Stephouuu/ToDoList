@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.todolist.todolist.R;
+import fr.todolist.todolist.activities.SearchActivity;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.recyclers.TodoListRecyclerHeaderViewHolder;
 import fr.todolist.todolist.recyclers.TodoListRecyclerItemViewHolder;
 import fr.todolist.todolist.utils.DateTimeManager;
+import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -99,9 +101,13 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             TypedValue tv = new TypedValue();
             if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
                 int toolbarSize = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+                int top = 0;
+                if (activity instanceof SearchActivity) {
+                    top = (int) StaticTools.dpToPx(activity, 47.f + 0.f);
+                }
 
                 RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams)view.getLayoutParams();
-                lp.setMargins(0, toolbarSize, 0, 0);
+                lp.setMargins(0, toolbarSize + top, 0, 0);
                 view.invalidate();
             }
 

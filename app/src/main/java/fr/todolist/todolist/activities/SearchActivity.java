@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -14,8 +15,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.List;
@@ -42,16 +52,23 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         intent.putExtra(EXTRA_SEARCH, value);
     }
 
-    private RelativeLayout introContainer;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
     private AppDatabase database;
     private TodoItemFilter filter;
     private SortingInfo sorting;
 
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private FloatingActionButton sortFab;
+
+    private RelativeLayout popUpSortParent;
+    private LinearLayout popUpSort;
+    private Button popUpSortOK;
+
     private TodoListFragment searchTitleFragment;
     private TodoListFragment searchContentFragment;
 
+    private AlphaAnimation popUpBgAnimationIn;
+    private AlphaAnimation popUpBgAnimationOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +84,28 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         sorting = new SortingInfo();
         sorting.date = SortingInfo.Type.Ascendant;
 
+        popUpBgAnimationIn = new AlphaAnimation(0.0f, 1.0f);
+        popUpBgAnimationIn.setInterpolator(new LinearInterpolator());
+        popUpBgAnimationIn.setDuration(400);
+        popUpBgAnimationOut = new AlphaAnimation(1.0f, 0.0f);
+        popUpBgAnimationOut.setInterpolator(new LinearInterpolator());
+        popUpBgAnimationOut.setDuration(200);
+        popUpBgAnimationOut.setAnimationListener(
+                new Animation.AnimationListener() {
+                     @Override
+                     public void onAnimationStart(Animation animation) {
+                     }
+
+                     @Override
+                     public void onAnimationEnd(Animation animation) {
+                         popUpSortParent.setVisibility(View.GONE);
+                     }
+
+                     @Override
+                     public void onAnimationRepeat(Animation animation) {
+                     }
+                 });
+
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
@@ -74,14 +113,118 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        introContainer = (RelativeLayout) findViewById(R.id.search_intro_container);
         viewPager = (ViewPager) findViewById(R.id.search_view_pager);
-
         tabLayout = (TabLayout) findViewById(R.id.search_tab_layout);
+
+        sortFab = (FloatingActionButton) findViewById(R.id.search_sort_fab);
+        popUpSortParent = (RelativeLayout) findViewById(R.id.popup_sort_parent);
+        popUpSort = (LinearLayout) findViewById(R.id.popup_sort);
+        popUpSortOK = (Button) findViewById(R.id.popup_sort_ok);
+
+        sortFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPopUpSort();
+            }
+        });
 
         createFragments();
         setupViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
+
+        initPopup();
+    }
+
+    private void initPopup() {
+        final CheckedTextView inProgress = (CheckedTextView)findViewById(R.id.checkbox_inprogress);
+        final CheckedTextView ok = (CheckedTextView)findViewById(R.id.checkbox_ok);
+        final CheckedTextView expired = (CheckedTextView)findViewById(R.id.checkbox_expired);
+        final Spinner dateSpinner = (Spinner)findViewById(R.id.sorting_date_spinner);
+
+        if (filter.hasFlags(TodoItemFilter.STATUS_TODO)) {
+            inProgress.toggle();
+        }
+        if (filter.hasFlags(TodoItemFilter.STATUS_OK)) {
+            ok.toggle();
+        }
+        if (filter.hasFlags(TodoItemFilter.STATUS_EXPIRED)) {
+            expired.toggle();
+        }
+
+        inProgress.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                inProgress.toggle();
+                if (inProgress.isChecked()) {
+                    filter.addFlags(TodoItemFilter.STATUS_TODO);
+                } else {
+                    filter.deleteFlags(TodoItemFilter.STATUS_TODO);
+                }
+            }
+        });
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ok.toggle();
+                if (ok.isChecked()) {
+                    filter.addFlags(TodoItemFilter.STATUS_OK);
+                } else {
+                    filter.deleteFlags(TodoItemFilter.STATUS_OK);
+                }
+            }
+        });
+
+        expired.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                expired.toggle();
+                if (expired.isChecked()) {
+                    filter.addFlags(TodoItemFilter.STATUS_EXPIRED);
+                } else {
+                    filter.deleteFlags(TodoItemFilter.STATUS_EXPIRED);
+                }
+            }
+        });
+
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.sorting_order, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(adapter2);
+        dateSpinner.setSelection(sorting.date.ordinal());
+
+        popUpSortOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int date = dateSpinner.getSelectedItemPosition();
+
+                if (date == SortingInfo.Type.Ascendant.ordinal()) {
+                    sorting.date = SortingInfo.Type.Ascendant;
+                } else {
+                    sorting.date = SortingInfo.Type.Descendant;
+                }
+
+                closePopUpSort();
+
+                searchTitleFragment.onResume();
+                searchContentFragment.onResume();
+            }
+        });
+
+        popUpSortParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int date = dateSpinner.getSelectedItemPosition();
+
+                if (date == SortingInfo.Type.Ascendant.ordinal()) {
+                    sorting.date = SortingInfo.Type.Ascendant;
+                } else {
+                    sorting.date = SortingInfo.Type.Descendant;
+                }
+
+                closePopUpSort();
+
+                searchTitleFragment.onResume();
+                searchContentFragment.onResume();
+            }
+        });
     }
 
     @Override
@@ -121,7 +264,6 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
             @Override
             public boolean onQueryTextSubmit(String search) {
                 if (search != null && search.length() > 0) {
-                    introContainer.setVisibility(View.GONE);
                     setSearch(getIntent(), search);
                     searchTitleFragment.setSearchParameter(search);
                     searchContentFragment.setSearchParameter(search);
@@ -237,12 +379,47 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByTitle(String toSearch) {
-        return (database.getItemsByTitle(toSearch));
+    public List<TodoItemInfo> getItemsByTitle(String toSearch, SortingInfo.Type date) {
+        return (database.getItemsByTitle(toSearch, date));
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByContent(String toSearch) {
-        return (database.getItemsByContent(toSearch));
+    public List<TodoItemInfo> getItemsByContent(String toSearch, SortingInfo.Type date) {
+        return (database.getItemsByContent(toSearch, date));
+    }
+
+    private void openPopUpSort() {
+        popUpSortParent.setVisibility(View.VISIBLE);
+        popUpSort.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_in);
+        popUpSortParent.startAnimation(popUpBgAnimationIn);
+        popUpSort.startAnimation(animation);
+    }
+
+    private void closePopUpSort() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popUpSortParent.startAnimation(popUpBgAnimationOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        popUpSort.post(new Runnable() {
+            @Override
+            public void run() {
+                popUpSort.setVisibility(View.GONE);
+            }
+        });
+        popUpSort.startAnimation(animation);
     }
 }
