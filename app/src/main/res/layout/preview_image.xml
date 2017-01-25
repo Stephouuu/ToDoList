@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:contentDescription="@null"
+        android:id="@+id/preview_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
+
+    <ImageView
+        android:contentDescription="@null"
+        android:padding="6dp"
+        android:id="@+id/preview_delete"
+        android:src="@mipmap/image_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@id/preview_image" />
+
+</RelativeLayout>

@@ -1,11 +1,17 @@
 package fr.todolist.todolist.activities;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -17,26 +23,37 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+
 import fr.todolist.todolist.R;
+import fr.todolist.todolist.adapters.ImageGridAdapter;
+import fr.todolist.todolist.adapters.PhotoAppsAdapter;
 import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.DatePickerFragment;
 import fr.todolist.todolist.fragments.TimePickerFragment;
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
+import fr.todolist.todolist.interfaces.ImageGridInterface;
 import fr.todolist.todolist.receivers.AlarmReceiver;
 import fr.todolist.todolist.utils.DateTimeManager;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
+import fr.todolist.todolist.views.AutoResizableGridView;
 
-public class AddTodoItemActivity extends AppCompatActivity implements AddTodoItemInterface {
+public class AddTodoItemActivity extends AppCompatActivity implements AddTodoItemInterface, ImageGridInterface {
 
     public enum Mode {
         Add,
@@ -44,8 +61,17 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         Edit,
     }
 
-    static public final String EXTRA_MODE = "mode";
-    static public final String EXTRA_ITEM = "item";
+    public static final String TEMP_FOLDER = "temp";
+
+    public static final String EXTRA_MODE = "mode";
+    public static final String EXTRA_ITEM = "item";
+    public static final String EXTRA_PHOTOS = "photos";
+
+    public final static String PHOTO_PREFIX = "photo";
+    public final static String PHOTO_SUFFIX = ".jpg";
+
+    public static final int REQUEST_CODE_PHOTO_CAPTURE = 3;
+    public static final int REQUEST_CODE_PHOTO_IMPORT = 4;
 
     private View root;
     private Mode mode;
@@ -56,6 +82,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private EditText dateEditText;
     private EditText timeEditText;
     private FloatingActionButton addFab;
+    private AutoResizableGridView gridView;
 
     private AppDatabase database;
     private TodoItemInfo info;
@@ -65,6 +92,21 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private EditText recurrenceTimeEditText;
     private EditText recurrenceIntervalEditText;
     private TextView recurrenceLabelIntervalTextView;
+
+    private PhotoAppsAdapter publishAdapter;
+
+    private ImageGridAdapter adapter;
+
+    private String photoToUpload;
+
+    public static ArrayList<String> getPhotos(Intent intent) {
+        ArrayList<String> strings = intent.getStringArrayListExtra(EXTRA_PHOTOS);
+        return strings;
+    }
+
+    public static void setPhotos(Intent intent, ArrayList<String> value) {
+        intent.putStringArrayListExtra(EXTRA_PHOTOS, value);
+    }
 
     static public void setExtraMode(Intent intent, Mode value) {
         intent.putExtra(EXTRA_MODE, value.ordinal());
@@ -120,6 +162,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         timeEditText = (EditText)findViewById(R.id.add_item_time);
         addFab = (FloatingActionButton)findViewById(R.id.add_item);
         reminderSwitchCompat = (SwitchCompat)findViewById(R.id.add_todo_item_reminder);
+        gridView = (AutoResizableGridView)findViewById(R.id.image_gridview);
 
         recurrenceParent = findViewById(R.id.add_item_recurrence_parent);
         priorityEditText = (EditText)findViewById(R.id.add_item_priority);
@@ -211,6 +254,26 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         } else if (mode == Mode.Edit) {
             addFab.setImageResource(R.mipmap.ic_valid_white);
         }
+
+        adapter = new ImageGridAdapter(this, new ArrayList<String>(), this);
+
+        gridView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PHOTO_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    addPhotoCallback(Uri.fromFile(getCapturePhotoFile()));
+                }
+                break;
+            case REQUEST_CODE_PHOTO_IMPORT:
+                if (resultCode == RESULT_OK && data != null) {
+                    addPhotoCallback(data.getData());
+                }
+                break;
+        }
     }
 
     @Override
@@ -246,6 +309,12 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             return true;
         }
         return false;
+    }
+
+    public void resizeGrid(int size) {
+        float nbLine = (float) (size) / (float) gridView.getNumColumns();
+        nbLine = (float) Math.ceil(nbLine);
+        gridView.setNbLine((int) nbLine);
     }
 
     private void done() {
@@ -504,6 +573,16 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         recurrenceParent.startAnimation(animation);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startActivityForResult(publishAdapter.getIntent(0), publishAdapter.getRequestCode(0));
+
+            }
+        }
+    }
+
     private void recurrenceParentClose() {
         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_to_left);
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -521,5 +600,153 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             }
         });
         recurrenceParent.startAnimation(animation);
+    }
+
+    private void selectPhotoSource() {
+        File captureFile = getCapturePhotoFile();
+        if (captureFile != null) {
+
+            ListView publishList = (ListView) findViewById(R.id.publish_popup_list);
+            final LinearLayout popUpBg = (LinearLayout) findViewById(R.id.add_image_parent);
+            TextView title = (TextView) findViewById(R.id.publish_popup_title);
+
+            popUpBg.setVisibility(View.VISIBLE);
+
+            publishAdapter = new PhotoAppsAdapter(this, captureFile,
+                    REQUEST_CODE_PHOTO_CAPTURE, REQUEST_CODE_PHOTO_IMPORT);
+            publishList.setAdapter(publishAdapter);
+            publishList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (publishAdapter.getPage() == 0) {
+                        if (position == 0) {
+                            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(AddTodoItemActivity.this, new String[]{Manifest.permission.CAMERA}, 0);
+                            } else {
+                                startActivityForResult(publishAdapter.getIntent(position), publishAdapter.getRequestCode(position));
+                                popUpBg.setVisibility(View.GONE);
+                            }
+                        } else if (position == 1) {
+                            publishAdapter.nextPage();
+                        } else {
+                            publishAdapter.setPage(2);
+                        }
+                    } else if (publishAdapter.getPage() == 1) {
+                        startActivityForResult(publishAdapter.getIntent(position), publishAdapter.getRequestCode(position));
+                        publishAdapter.setPage(0);
+                        popUpBg.setVisibility(View.GONE);
+                    } else if (publishAdapter.getPage() == 2) {
+                        startActivityForResult(publishAdapter.getIntent(position), publishAdapter.getRequestCode(position));
+                        publishAdapter.setPage(0);
+                        popUpBg.setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            popUpBg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popUpBg.setVisibility(View.GONE);
+                }
+            });
+        }
+    }
+
+    private File getCapturePhotoFile() {
+        File dir = getTempPhotoDir();
+        if (dir != null) {
+            dir.mkdirs();
+            return new File(dir, PHOTO_PREFIX + PHOTO_SUFFIX);
+        }
+        return null;
+    }
+
+    @Nullable
+    private File getTempPhotoDir() {
+        File dir = getExternalCacheDir();
+        if (dir != null) {
+            String path = dir.getAbsolutePath();
+            path += File.separator + TEMP_FOLDER;
+            return new File(path);
+        }
+        return null;
+    }
+
+    private File createTempPhotoFile() {
+        File dir = getTempPhotoDir();
+        if (dir != null) {
+            dir.mkdirs();
+            try {
+                return File.createTempFile(PHOTO_PREFIX, PHOTO_SUFFIX, dir);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private void addPhotoCallback(Uri uri) {
+        InputStream input = null;
+        try {
+            input = getContentResolver().openInputStream(uri);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (input == null) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            return;
+        }
+        final String extension = uri.toString().substring(uri.toString().length() - 4);
+        File file = null;
+        int pos = uri.toString().indexOf(".");
+
+        if (pos == -1 || extension.equalsIgnoreCase(".jpg") || extension.equalsIgnoreCase(".png") || extension.equalsIgnoreCase(".jpeg")) {
+            file = createTempPhotoFile();
+        }
+
+        if (file == null) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            return;
+        }
+        boolean copied = StaticTools.copyStreamToFile(input, file);
+        if (!copied) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            return;
+        }
+        ArrayList<String> photos = getPhotos(getIntent());
+        if (photos == null) {
+            photos = new ArrayList<>();
+        }
+
+        photoToUpload = file.getAbsolutePath();
+        final String ext = photoToUpload.substring(photoToUpload.lastIndexOf('.'));
+        if ((ext.equalsIgnoreCase(".jpeg") || ext.equalsIgnoreCase(".png")
+                || ext.equalsIgnoreCase(".jpg")) && !uri.toString().contains("video")) {
+            photos.add(photoToUpload);
+            resizeGrid(photos.size() + 1);
+            setPhotos(getIntent(), photos);
+            adapter.setAll(getPhotos(getIntent()));
+        } else {
+            Toast.makeText(this, "Format de fichier non pris en charge", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void removePhoto(String photo) {
+        ArrayList<String> photos = getPhotos(getIntent());
+        if (photos.remove(photo)) {
+            setPhotos(getIntent(), photos);
+            adapter.setAll(getPhotos(getIntent()));
+        }
+    }
+
+    @Override
+    public void onDeleteClick(String toDelete) {
+        removePhoto(toDelete);
+        resizeGrid(adapter.getCount() + 1);
+    }
+
+    @Override
+    public void onAddButtonClick() {
+        selectPhotoSource();
     }
 }

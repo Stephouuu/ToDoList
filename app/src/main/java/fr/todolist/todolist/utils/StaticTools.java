@@ -2,12 +2,17 @@ package fr.todolist.todolist.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +74,48 @@ public class StaticTools {
             }
         }
         return (result);
+    }
+
+    public static boolean copyStreamToFile(
+            @NonNull InputStream input,
+            @NonNull File target
+    ) {
+        try {
+            target.getParentFile().mkdirs();
+            FileOutputStream output = new FileOutputStream(target);
+            return copyStreamToStream(input, output);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean copyStreamToStream(
+            @NonNull InputStream input,
+            @NonNull OutputStream output
+    ) {
+        boolean result = false;
+        try {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = input.read(buffer)) > 0) {
+                output.write(buffer, 0, bytesRead);
+            }
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            input.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            output.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

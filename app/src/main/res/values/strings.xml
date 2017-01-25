@@ -85,4 +85,8 @@
     </string-array>
 
     <string name="ok">OK</string>
+    <string name="add_image">Add Image</string>
+    <string name="get_photo">Capture photo</string>
+    <string name="get_galerie">Galerie</string>
+    <string name="error">Error</string>
 </resources>

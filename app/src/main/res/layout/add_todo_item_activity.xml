@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
+    android:background="@color/white100"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/AppBarTheme"
@@ -273,19 +274,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <fr.todolist.todolist.views.AutoResizableGridView
+                android:layout_marginTop="32dp"
+                android:id="@+id/image_gridview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="true"
+                android:columnWidth="100dp"
+                android:gravity="center"
+                android:isScrollContainer="false"
+                android:numColumns="auto_fit"
+                android:scrollbars="none"
+                android:stretchMode="columnWidth"
+                android:soundEffectsEnabled="false"
+                android:background="@color/white100"
+                android:verticalSpacing="15dp"/>
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/cancel_item"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
+    <LinearLayout
+        android:id="@+id/add_image_parent"
         android:layout_width="match_parent"
-        android:scaleType="center"
-        android:src="@mipmap/close"
-        app:layout_anchor="@id/appBarLayout"
-        app:layout_anchorGravity="bottom|right|end" />
+        android:layout_height="match_parent"
+        android:background="@color/black60"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/dialog_holo_light_frame"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/publish_popup_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="14dp"
+                android:text="@string/add_image"
+                android:textColor="@color/colorPrimary100"
+                android:textSize="20sp"/>
+
+            <ListView
+                android:id="@+id/publish_popup_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:choiceMode="singleChoice"
+                android:divider="@null"
+                android:dividerHeight="0dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_item"
