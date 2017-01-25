@@ -278,6 +278,16 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/cancel_item"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_width="match_parent"
+        android:scaleType="center"
+        android:src="@mipmap/close"
+        app:layout_anchor="@id/appBarLayout"
+        app:layout_anchorGravity="bottom|right|end" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_item"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"

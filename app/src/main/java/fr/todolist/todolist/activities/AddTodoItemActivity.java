@@ -11,6 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -130,6 +133,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 if (mode == Mode.Add || mode == Mode.Edit) {
                     onValid();
                 } else {
+                    supportInvalidateOptionsMenu();
                     mode = Mode.Edit;
                     childSetEnabled(true);
                     addFab.setImageResource(R.mipmap.ic_valid_white);
@@ -221,6 +225,42 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     public void onPause() {
         super.onPause();
         StaticTools.hideKeyboard(getApplicationContext(), root);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mode == Mode.Consultation) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.add_item_activity_menu, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add_item_menu_done) {
+            done();
+            return true;
+        } else if (item.getItemId() == R.id.add_item_menu_delete) {
+            delete();
+            return true;
+        }
+        return false;
+    }
+
+    private void done() {
+        info.status = TodoItemInfo.Status.Done;
+        database.updateItem(info);
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+    }
+
+    private void delete() {
+        database.deleteItem(info.id);
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
     private void refreshEditMode() {
@@ -352,6 +392,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                     mode = Mode.Consultation;
                     addFab.setImageResource(R.mipmap.menu_icon_edit);
                     Toast.makeText(this, R.string.edit_save, Toast.LENGTH_SHORT).show();
+                    supportInvalidateOptionsMenu();
                 }
             } else {
                 Toast.makeText(this, "The due date must be in the future", Toast.LENGTH_SHORT).show();

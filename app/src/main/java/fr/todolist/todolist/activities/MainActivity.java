@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             filter.setFlags(TodoItemFilter.STATUS_TODO);
         }
 
-        Routes.Load(getIntent().getData());
-
         selected = new LongSparseArray<>();
         fabMode = MainFabMode.Add;
         mode = Mode.Normal;

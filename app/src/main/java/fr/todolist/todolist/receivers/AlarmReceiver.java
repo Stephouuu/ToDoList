@@ -65,7 +65,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     .setTicker(content);
 
             Intent intent = new Intent(context, SplashScreenActivity.class);
-            intent.setData(Uri.parse("doit://consultation/" + item.id));
+            intent.setData(Uri.parse("todolist://consultation/" + item.id));
 
             builder.setContentIntent(PendingIntent.getActivity(context, id.get(), intent, PendingIntent.FLAG_ONE_SHOT));
             Notification notification = builder.build();

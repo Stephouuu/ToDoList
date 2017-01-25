@@ -75,4 +75,6 @@
 
     <string name="edit_save">Changes have been saved</string>
 
+    <string name="delete">Delete</string>
+
 </resources>
