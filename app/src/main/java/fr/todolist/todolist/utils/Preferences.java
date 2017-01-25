@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 public class Preferences {
 
     private final static String FILTER_STATUS = "FILTER.STATUS";
+    private final static String SORTING_DATE = "SORTING.DATE";
 
     /**
      * Retourne l'instance par défaut des préférences partagées.
@@ -51,6 +52,28 @@ public class Preferences {
             setHomePageFilter(context, null);
         }
         return (filter);
+    }
+
+    public static void setHomePageSorting(Context context, SortingInfo info) {
+        SharedPreferences prefs = getSharedPreferences(context);
+        if (info == null) {
+            prefs.edit().remove(SORTING_DATE).apply();
+        } else {
+            prefs.edit().putInt(SORTING_DATE, info.date.ordinal()).apply();
+        }
+    }
+
+    @Nullable
+    public static SortingInfo getHomePageSorting(Context context) {
+        SortingInfo sorting = new SortingInfo();
+        SharedPreferences prefs = getSharedPreferences(context);
+        try {
+            int date = prefs.getInt(SORTING_DATE, -1);
+            sorting.date = (date == SortingInfo.Type.Descendant.ordinal()) ? SortingInfo.Type.Descendant : SortingInfo.Type.Ascendant;
+        } catch (Exception e) {
+            setHomePageFilter(context, null);
+        }
+        return (sorting);
     }
 
 }

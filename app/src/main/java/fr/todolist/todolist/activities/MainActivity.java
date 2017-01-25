@@ -18,8 +18,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.List;
@@ -32,6 +34,7 @@ import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.receivers.AlarmReceiver;
 import fr.todolist.todolist.utils.Preferences;
 import fr.todolist.todolist.utils.Routes;
+import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
 
     private AppDatabase database;
     private TodoItemFilter filter;
+    private SortingInfo sorting;
     private TodoListFragment todoListFragment;
 
     private LongSparseArray<TodoItemInfo> selected;
@@ -71,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             filter = new TodoItemFilter();
             filter.setFlags(TodoItemFilter.STATUS_TODO);
         }
+
+        sorting = Preferences.getHomePageSorting(getApplicationContext());
 
         selected = new LongSparseArray<>();
         fabMode = MainFabMode.Add;
@@ -157,6 +163,9 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             return true;
         } else if (item.getTitle().equals(getString(R.string.filter))) {
             createFilterDialogBox();
+            return true;
+        } else if (item.getTitle().equals(getString(R.string.sorting))) {
+            createSortingDialogBox();
             return true;
         }
         return false;
@@ -315,6 +324,46 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
         });
     }
 
+    private void createSortingDialogBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final LayoutInflater inflater = getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.sorting_dialog_fragment, null);
+
+        final Spinner dateSpinner = (Spinner)view.findViewById(R.id.sorting_date_spinner);
+
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,
+                R.array.sorting_order, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dateSpinner.setAdapter(adapter2);
+        dateSpinner.setSelection(sorting.date.ordinal());
+
+        builder.setView(view)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int date = dateSpinner.getSelectedItemPosition();
+
+                        if (date == SortingInfo.Type.Ascendant.ordinal()) {
+                            sorting.date = SortingInfo.Type.Ascendant;
+                        } else {
+                            sorting.date = SortingInfo.Type.Descendant;
+                        }
+
+                        Preferences.setHomePageSorting(getApplicationContext(), sorting);
+                        refreshFragment();
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        refreshFragment();
+                    }
+                })
+                .create()
+                .show();
+    }
+
     private void refreshFragment() {
         if (todoListFragment == null) {
             todoListFragment = new TodoListFragment();
@@ -348,23 +397,18 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateASC() {
-        return (database.getItemsByDueDateASC());
+    public SortingInfo getSortingInfo() {
+        return (sorting);
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateDESC() {
-        return (database.getItemsByDueDateDESC());
+    public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
+        return (database.getItemsByDueDate(date));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByTitle(String toSearch) {
         return (database.getItemsByTitle(toSearch));
-    }
-
-    @Override
-    public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
-        return (database.getItemsByStatus(toSearch));
     }
 
     @Override

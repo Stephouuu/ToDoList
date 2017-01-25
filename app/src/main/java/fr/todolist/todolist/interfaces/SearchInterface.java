@@ -2,6 +2,7 @@ package fr.todolist.todolist.interfaces;
 
 import java.util.List;
 
+import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -12,10 +13,9 @@ import fr.todolist.todolist.utils.TodoItemInfo;
 public interface SearchInterface {
 
     TodoItemFilter getFilter();
-    List<TodoItemInfo> getItemsByDueDateASC();
-    List<TodoItemInfo> getItemsByDueDateDESC();
+    SortingInfo getSortingInfo();
+    List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date);
     List<TodoItemInfo> getItemsByTitle(String toSearch);
-    List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch);
     List<TodoItemInfo> getItemsByContent(String toSearch);
 
 }

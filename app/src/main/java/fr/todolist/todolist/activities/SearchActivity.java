@@ -26,6 +26,7 @@ import fr.todolist.todolist.database.AppDatabase;
 import fr.todolist.todolist.fragments.TodoListFragment;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -46,6 +47,7 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     private ViewPager viewPager;
     private AppDatabase database;
     private TodoItemFilter filter;
+    private SortingInfo sorting;
 
     private TodoListFragment searchTitleFragment;
     private TodoListFragment searchContentFragment;
@@ -61,6 +63,9 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
 
         filter = new TodoItemFilter();
         filter.setFlags(TodoItemFilter.STATUS_TODO | TodoItemFilter.STATUS_OK | TodoItemFilter.STATUS_EXPIRED);
+
+        sorting = new SortingInfo();
+        sorting.date = SortingInfo.Type.Ascendant;
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -162,18 +167,15 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     }
 
     private void createFragments() {
-        {
-            searchTitleFragment = new TodoListFragment();
-            Bundle args1 = new Bundle();
-            args1.putString(TodoListFragment.EXTRA_MODE, String.valueOf(TodoListFragment.Mode.Title));
-            searchTitleFragment.setArguments(args1);
-        }
-        {
-            searchContentFragment = new TodoListFragment();
-            Bundle args2 = new Bundle();
-            args2.putString(TodoListFragment.EXTRA_MODE, String.valueOf(TodoListFragment.Mode.Content));
-            searchContentFragment.setArguments(args2);
-        }
+        searchTitleFragment = new TodoListFragment();
+        Bundle args1 = new Bundle();
+        args1.putString(TodoListFragment.EXTRA_MODE, String.valueOf(TodoListFragment.Mode.Title));
+        searchTitleFragment.setArguments(args1);
+
+        searchContentFragment = new TodoListFragment();
+        Bundle args2 = new Bundle();
+        args2.putString(TodoListFragment.EXTRA_MODE, String.valueOf(TodoListFragment.Mode.Content));
+        searchContentFragment.setArguments(args2);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -225,23 +227,18 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateASC() {
-        return (database.getItemsByDueDateASC());
+    public SortingInfo getSortingInfo() {
+        return (sorting);
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateDESC() {
-        return (database.getItemsByDueDateDESC());
+    public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
+        return (database.getItemsByDueDate(date));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByTitle(String toSearch) {
         return (database.getItemsByTitle(toSearch));
-    }
-
-    @Override
-    public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
-        return (database.getItemsByStatus(toSearch));
     }
 
     @Override

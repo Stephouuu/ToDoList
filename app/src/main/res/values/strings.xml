@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ToDoList</string>
 
-    <string name="home_page">To Do</string>
+    <string name="home_page">To Do List</string>
     <string name="search">Search</string>
 
     <string name="open">Open</string>
@@ -74,7 +74,13 @@
     <string name="priority_max">Max</string>
 
     <string name="edit_save">Changes have been saved</string>
-
     <string name="delete">Delete</string>
 
+    <string name="sorting">Sorting</string>
+    <string name="status">Status</string>
+
+    <string-array name="sorting_order">
+        <item>Ascendant</item>
+        <item>Descendant</item>
+    </string-array>
 </resources>

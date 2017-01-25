@@ -9,4 +9,10 @@
         android:title="@string/search"
         app:showAsAction="ifRoom|collapseActionView" />
 
+    <item
+        android:id="@+id/main_menu_sorting"
+        android:icon="@mipmap/sort"
+        android:title="@string/sorting"
+        app:showAsAction="ifRoom|collapseActionView" />
+
 </menu>

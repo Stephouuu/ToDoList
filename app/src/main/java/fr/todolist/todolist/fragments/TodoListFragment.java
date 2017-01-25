@@ -24,6 +24,7 @@ import fr.todolist.todolist.adapters.TodoListRecyclerAdapter;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
 import fr.todolist.todolist.utils.HidingScrollListener;
+import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
@@ -148,10 +149,6 @@ public class TodoListFragment extends Fragment {
         return (view);
     }
 
-    public int getListSize() {
-        return (adapter.getBasicItemCount());
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -181,20 +178,21 @@ public class TodoListFragment extends Fragment {
 
     @Nullable
     private List<TodoItemInfo> getListItem() {
+        SortingInfo sorting = ((SearchInterface) getActivity()).getSortingInfo();
         List<TodoItemInfo> list = null;
         switch (mode) {
             case DueDateASC:
-                list = ((SearchInterface) getActivity()).getItemsByDueDateASC();
+                list = ((SearchInterface) getActivity()).getItemsByDueDate(sorting.date);
                 break;
-            case DueDateDESC:
+            /*case DueDateDESC:
                 list = ((SearchInterface) getActivity()).getItemsByDueDateDESC();
-                break;
+                break;*/
             case Title:
                 list = ((SearchInterface) getActivity()).getItemsByTitle(searchParameter);
                 break;
-            case Status:
+            /*case Status:
                 list = ((SearchInterface) getActivity()).getItemsByStatus(TodoItemInfo.Status.valueOf(searchParameter));
-                break;
+                break;*/
             case Content:
                 list = ((SearchInterface) getActivity()).getItemsByContent(searchParameter);
                 break;

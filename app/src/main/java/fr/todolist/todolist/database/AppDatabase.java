@@ -12,6 +12,7 @@ import java.util.List;
 import fr.todolist.todolist.interfaces.SearchInterface;
 import fr.todolist.todolist.utils.AlertInfo;
 import fr.todolist.todolist.utils.DateTimeManager;
+import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -122,13 +123,6 @@ public class AppDatabase implements SearchInterface {
         return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + alert.id, null));
     }
 
-    /*public AlertInfo getAlertInfoByID(int id) {
-        String[] what = new String[] {MySQLite.ALARM_COL_ID, MySQLite.ALARM_COL_TITLE, MySQLite.ALARM_COL_CONTENT};
-        String where = MySQLite.ALARM_COL_ID + " = " + id + ";";
-
-        return (cursorToAlertInfo(database.query(MySQLite.ALARM_TABLE_NAME, what, where, null, null, null, null)));
-    }*/
-
     public AlertInfo getAlertInfoByItemID(int id) {
         List<AlertInfo> result = getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME + " WHERE " + MySQLite.ALARM_COL_ID_ITEM + " = " + id + ";");
         if (result.size() > 0) {
@@ -155,26 +149,20 @@ public class AppDatabase implements SearchInterface {
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateASC() {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS
-                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " ASC ;"));
+    public SortingInfo getSortingInfo() {
+        return (null);
     }
 
     @Override
-    public List<TodoItemInfo> getItemsByDueDateDESC() {
+    public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
+        String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
         return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS
-                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " DESC ;"));
+                + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + " ;"));
     }
 
     @Override
     public List<TodoItemInfo> getItemsByTitle(String toSearch) {
         return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '" + toSearch + "%'"
-                + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
-    }
-
-    @Override
-    public List<TodoItemInfo> getItemsByStatus(TodoItemInfo.Status toSearch) {
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_FLAG_STATUS + " = " + toSearch.getValue()
                 + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC ;"));
     }
 

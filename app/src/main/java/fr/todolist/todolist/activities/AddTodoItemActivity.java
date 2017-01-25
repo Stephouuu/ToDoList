@@ -249,6 +249,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     }
 
     private void done() {
+        AlarmReceiver.deleteAlarm(getApplicationContext(), (int)info.id);
         info.status = TodoItemInfo.Status.Done;
         database.updateItem(info);
         setResult(RESULT_OK);
@@ -257,6 +258,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     }
 
     private void delete() {
+        AlarmReceiver.deleteAlarm(getApplicationContext(), (int)info.id);
         database.deleteItem(info.id);
         setResult(RESULT_OK);
         finish();
