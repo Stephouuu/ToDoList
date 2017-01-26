@@ -126,6 +126,7 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             ((TodoListRecyclerItemViewHolder)holder).refreshTitle(item.title);
             ((TodoListRecyclerItemViewHolder)holder).refreshDate(item);
             ((TodoListRecyclerItemViewHolder)holder).refreshCategory(item, isFirstStatus(item), isFirstDate(item));
+            ((TodoListRecyclerItemViewHolder)holder).refreshImage(item);
 
             if (position == 0 && position == getBasicItemCount() - 1) {
                 ((TodoListRecyclerItemViewHolder)holder).rounded_border_top_bottom();

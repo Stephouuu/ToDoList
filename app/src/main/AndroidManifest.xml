@@ -32,12 +32,18 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.MainActivity"/>
-        <activity android:name=".activities.AddTodoItemActivity"/>
-        <activity android:name=".activities.SearchActivity" android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.AddTodoItemActivity" />
+        <activity
+            android:name=".activities.SearchActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <receiver android:name=".receivers.AlarmReceiver" />
 
+        <activity
+            android:name=".activities.ImageActivity"
+            android:label="@string/title_activity_image"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

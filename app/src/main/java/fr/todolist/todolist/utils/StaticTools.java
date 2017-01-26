@@ -2,7 +2,6 @@ package fr.todolist.todolist.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -37,6 +36,21 @@ public class StaticTools {
         InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if(inputMethodManager != null) {
             inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+    }
+
+    public static String[] deserializeFiles(String serialized, String sep) {
+        return serialized.split(sep);
+    }
+
+    public static void deleteFiles(String[] files) {
+        for (String file : files) {
+            try {
+                File newFile = new File(file);
+                newFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -76,10 +90,7 @@ public class StaticTools {
         return (result);
     }
 
-    public static boolean copyStreamToFile(
-            @NonNull InputStream input,
-            @NonNull File target
-    ) {
+    public static boolean copyStreamToFile(InputStream input, File target) {
         try {
             target.getParentFile().mkdirs();
             FileOutputStream output = new FileOutputStream(target);
@@ -90,10 +101,7 @@ public class StaticTools {
         }
     }
 
-    public static boolean copyStreamToStream(
-            @NonNull InputStream input,
-            @NonNull OutputStream output
-    ) {
+    public static boolean copyStreamToStream(InputStream input, OutputStream output) {
         boolean result = false;
         try {
             byte[] buffer = new byte[1024];

@@ -8,5 +8,6 @@ public interface ImageGridInterface {
 
     void onDeleteClick(String toDelete);
     void onAddButtonClick();
+    void onItemClick(String photo);
 
 }

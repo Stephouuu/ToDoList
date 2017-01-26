@@ -1,16 +1,24 @@
 package fr.todolist.todolist.recyclers;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+
 import fr.todolist.todolist.R;
+import fr.todolist.todolist.asynctasks.ImageDiskAsyncTask;
+import fr.todolist.todolist.interfaces.ImageDiskAsyncTaskInterface;
 import fr.todolist.todolist.interfaces.TodoListInterface;
+import fr.todolist.todolist.utils.BitmapCache;
 import fr.todolist.todolist.utils.DateTimeManager;
+import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
 /**
@@ -22,6 +30,7 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
     private Activity activity;
     private View parent;
     private TodoListInterface listener;
+    private ImageDiskAsyncTask imageDiskAsyncTask;
 
     private TodoListRecyclerItemViewHolder(Activity activity, View parent, TodoListInterface listener) {
         super(parent);
@@ -114,6 +123,31 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
             textView.setText(text);
         } else {
             textView.setVisibility(View.GONE);
+        }
+    }
+
+    public void refreshImage(TodoItemInfo item) {
+        final ImageView imageView = (ImageView)parent.findViewById(R.id.image_preview);
+        String[] photos = StaticTools.deserializeFiles(item.photos, ";");
+
+        if (photos.length > 0) {
+            final String photo = photos[0];
+            Bitmap bitmap = BitmapCache.getInCache(photo);
+            if (bitmap == null) {
+                imageView.setImageResource(R.drawable.todo_icon);
+                File exist = new File(photo);
+                if (exist.exists()) {
+                    new ImageDiskAsyncTask(activity, photo, new ImageDiskAsyncTaskInterface() {
+                        @Override
+                        public void onFinish(Bitmap bitmap) {
+                            imageView.setImageBitmap(bitmap);
+                            BitmapCache.putInCache(photo, bitmap);
+                        }
+                    }).execute();
+                }
+            } else {
+                imageView.setImageBitmap(bitmap);
+            }
         }
     }
 

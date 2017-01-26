@@ -81,6 +81,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_INTERVAL_TYPE, item.intervalType);
         values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
         values.put(MySQLite.TODO_COL_PRIORITY, item.priority);
+        values.put(MySQLite.TODO_COL_ILLUSTRATIONS, item.photos);
 
         item.id = database.insert(MySQLite.TODO_TABLE_NAME, null, values);
         return (item);
@@ -110,6 +111,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.TODO_COL_INTERVAL_TYPE, item.intervalType);
         values.put(MySQLite.TODO_COL_BASE_NB_RECURRENCE, item.nbBaseRecurrence);
         values.put(MySQLite.TODO_COL_PRIORITY, item.priority);
+        values.put(MySQLite.TODO_COL_ILLUSTRATIONS, item.photos);
 
         return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + item.id, null));
     }
@@ -240,6 +242,7 @@ public class AppDatabase implements SearchInterface {
         item.intervalType = cursor.getString(MySQLite.TODO_NUM_COL_INTERVAL_TYPE);
         item.nbBaseRecurrence = cursor.getInt(MySQLite.TODO_NUM_COL_BASE_NB_RECURRENCE);
         item.priority = cursor.getInt(MySQLite.TODO_NUM_COL_PRIORITY);
+        item.photos = cursor.getString(MySQLite.TODO_NUM_COL_ILLUSTRATIONS);
 
         return (item);
     }

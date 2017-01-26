@@ -30,6 +30,7 @@ import fr.todolist.todolist.receivers.AlarmReceiver;
 import fr.todolist.todolist.utils.Preferences;
 import fr.todolist.todolist.utils.Routes;
 import fr.todolist.todolist.utils.SortingInfo;
+import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             public void onClick(View v) {
                 for (int i = 0 ; i < selected.size() ; ++i) {
                     TodoItemInfo item = selected.get(selected.keyAt(i));
+                    StaticTools.deleteFiles(StaticTools.deserializeFiles(item.photos, ";"));
                     database.deleteItem(item.id);
                     AlarmReceiver.deleteAlarm(getApplicationContext(), (int)item.id);
                 }
@@ -138,9 +140,6 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_activity_menu, menu);
-
-        //menu.add(getString(R.string.filter));
-
         return true;
     }
 
@@ -151,9 +150,6 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
             startActivity(search);
             overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             return true;
-        /*} else if (item.getTitle().equals(getString(R.string.filter))) {
-            createFilterDialogBox();
-            return true;*/
         } else if (item.getTitle().equals(getString(R.string.sorting))) {
             createSortingDialogBox();
             return true;

@@ -50,9 +50,6 @@ public class TodoListFragment extends Fragment {
     private String searchParameter;
     private boolean retractableToolbar;
 
-    public TodoListFragment() {
-    }
-
     @Override
     public void onCreate(@Nullable Bundle state) {
         super.onCreate(state);

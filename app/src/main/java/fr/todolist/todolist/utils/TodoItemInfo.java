@@ -42,6 +42,7 @@ public class TodoItemInfo implements Parcelable {
     public long intervalRecurrence;
     public String intervalType;
     public int priority;
+    public String photos;
 
     public TodoItemInfo() {
         id = 0;
@@ -60,6 +61,7 @@ public class TodoItemInfo implements Parcelable {
         intervalRecurrence = 0;
         intervalType = "Second(s)";
         priority = 0;
+        photos = "";
     }
 
     @Override
@@ -85,6 +87,7 @@ public class TodoItemInfo implements Parcelable {
         out.writeLong(intervalRecurrence);
         out.writeString(intervalType);
         out.writeInt(priority);
+        out.writeString(photos);
     }
 
     public static final Parcelable.Creator<TodoItemInfo> CREATOR = new Parcelable.Creator<TodoItemInfo>() {
@@ -117,6 +120,7 @@ public class TodoItemInfo implements Parcelable {
         intervalRecurrence = in.readLong();
         intervalType = in.readString();
         priority = in.readInt();
+        photos = in.readString();
     }
 
 }

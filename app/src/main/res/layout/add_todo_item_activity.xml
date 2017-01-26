@@ -274,8 +274,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <fr.todolist.todolist.views.AutoResizableGridView
+            <TextView
                 android:layout_marginTop="32dp"
+                android:layout_marginBottom="8dp"
+                android:text="Illustration(s)"
+                android:textSize="18sp"
+                android:textColor="@color/grey_light_100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <fr.todolist.todolist.views.AutoResizableGridView
+                android:layout_marginBottom="26dp"
                 android:id="@+id/image_gridview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -316,7 +325,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="14dp"
                 android:text="@string/add_image"
-                android:textColor="@color/colorPrimary100"
+                android:textColor="@color/black100"
                 android:textSize="20sp"/>
 
             <ListView

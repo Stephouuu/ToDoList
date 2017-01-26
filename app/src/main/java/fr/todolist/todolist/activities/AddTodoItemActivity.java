@@ -4,6 +4,10 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +41,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -162,7 +169,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         timeEditText = (EditText)findViewById(R.id.add_item_time);
         addFab = (FloatingActionButton)findViewById(R.id.add_item);
         reminderSwitchCompat = (SwitchCompat)findViewById(R.id.add_todo_item_reminder);
-        gridView = (AutoResizableGridView)findViewById(R.id.image_gridview);
+        gridView = (AutoResizableGridView) findViewById(R.id.image_gridview);
 
         recurrenceParent = findViewById(R.id.add_item_recurrence_parent);
         priorityEditText = (EditText)findViewById(R.id.add_item_priority);
@@ -245,6 +252,18 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             }
         });
 
+        ArrayList<String> list = new ArrayList<>();
+        String[] photos = info.photos.split(";");
+        for (String photo : photos) {
+            if (!photo.isEmpty()) {
+                list.add(photo);
+            }
+        }
+        setPhotos(getIntent(), list);
+
+        adapter = new ImageGridAdapter(this, list, this);
+        gridView.setAdapter(adapter);
+
         if (mode == Mode.Consultation) {
             addFab.setImageResource(R.mipmap.menu_icon_edit);
             refreshEditMode();
@@ -254,10 +273,6 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         } else if (mode == Mode.Edit) {
             addFab.setImageResource(R.mipmap.ic_valid_white);
         }
-
-        adapter = new ImageGridAdapter(this, new ArrayList<String>(), this);
-
-        gridView.setAdapter(adapter);
     }
 
     @Override
@@ -327,6 +342,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     }
 
     private void delete() {
+        StaticTools.deleteFiles(StaticTools.deserializeFiles(info.photos, ";"));
         AlarmReceiver.deleteAlarm(getApplicationContext(), (int)info.id);
         database.deleteItem(info.id);
         setResult(RESULT_OK);
@@ -354,6 +370,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         recurrenceLabelIntervalTextView.setText(info.intervalType);
 
         childSetEnabled(false);
+        refreshImages();
     }
 
     private void childSetEnabled(boolean value) {
@@ -365,6 +382,18 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         priorityEditText.setEnabled(value);
         recurrenceTimeEditText.setEnabled(value);
         recurrenceIntervalEditText.setEnabled(value);
+        gridView.setEnabled(value);
+    }
+
+    private void refreshImages() {
+        String[] photos = info.photos.split(";");
+        ArrayList<String> list = new ArrayList<>();
+        Log.i("image", "nb: " + photos.length);
+        for (String photo : photos) {
+            Log.i("image", photo);
+            list.add(photo);
+        }
+        adapter.setAll(list);
     }
 
     private boolean confirm() {
@@ -448,6 +477,7 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
             long time = DateTimeManager.castDateTimeToUnixTime(info.dateTime);
 
             if (DateTimeManager.isDateTimeValid(time)) {
+                addPhotoToTodoItem();
                 if (mode == Mode.Add) {
                     info = database.insertItem(info);
                     AlarmReceiver.addAlarm(this, info, time);
@@ -467,6 +497,19 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
                 }
             } else {
                 Toast.makeText(this, "The due date must be in the future", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void addPhotoToTodoItem() {
+        info.photos = "";
+        ArrayList<String> photos = getPhotos(getIntent());
+        if (photos != null) {
+            for (int i = 0 ; i < photos.size() ; ++i) {
+                if (i > 0) {
+                    info.photos += ";";
+                }
+                info.photos += photos.get(i);
             }
         }
     }
@@ -578,7 +621,8 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         if (requestCode == 0) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startActivityForResult(publishAdapter.getIntent(0), publishAdapter.getRequestCode(0));
-
+                final LinearLayout popUpBg = (LinearLayout) findViewById(R.id.add_image_parent);
+                popUpBg.setVisibility(View.GONE);
             }
         }
     }
@@ -717,8 +761,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         if (photos == null) {
             photos = new ArrayList<>();
         }
-
         photoToUpload = file.getAbsolutePath();
+        rotateImage(photoToUpload);
+
         final String ext = photoToUpload.substring(photoToUpload.lastIndexOf('.'));
         if ((ext.equalsIgnoreCase(".jpeg") || ext.equalsIgnoreCase(".png")
                 || ext.equalsIgnoreCase(".jpg")) && !uri.toString().contains("video")) {
@@ -731,22 +776,81 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
-    private void removePhoto(String photo) {
+    private void rotateImage(String photo) {
+        ExifInterface exif;
+        try {
+            exif = new ExifInterface(photo);
+
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
+            Log.d("EXIF", "Exif: " + orientation);
+            Matrix matrix = new Matrix();
+            if (orientation == 6) {
+                matrix.postRotate(90);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 3) {
+                matrix.postRotate(180);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 8) {
+                matrix.postRotate(270);
+                Log.d("EXIF", "Exif: " + orientation);
+            }
+            if (orientation != 0) {
+                File file = new File(photo);
+                Bitmap bitmap = BitmapFactory.decodeFile(photo);
+                Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                FileOutputStream out = new FileOutputStream(file);
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+                scaledBitmap.recycle();
+                bitmap.recycle();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removePhoto(final String photo, boolean confirm) {
         ArrayList<String> photos = getPhotos(getIntent());
-        if (photos.remove(photo)) {
-            setPhotos(getIntent(), photos);
-            adapter.setAll(getPhotos(getIntent()));
+        if (photos != null) {
+            if (photos.contains(photo)) {
+                if (!confirm) {
+                        new android.app.AlertDialog.Builder(this)
+                                .setTitle("Delete Illustration")
+                                .setMessage("Do you want to delete this picture ?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        removePhoto(photo, true);
+                                    }
+                                })
+                                .setNegativeButton("No", null)
+                                .show();
+                } else if (photos.remove(photo)) {
+                    setPhotos(getIntent(), photos);
+                    adapter.setAll(getPhotos(getIntent()));
+                }
+            }
         }
     }
 
     @Override
     public void onDeleteClick(String toDelete) {
-        removePhoto(toDelete);
-        resizeGrid(adapter.getCount() + 1);
+        if (mode != Mode.Consultation) {
+            removePhoto(toDelete, false);
+            resizeGrid(adapter.getCount() + 1);
+        }
     }
 
     @Override
     public void onAddButtonClick() {
-        selectPhotoSource();
+        if (mode != Mode.Consultation) {
+            selectPhotoSource();
+        }
+    }
+
+    @Override
+    public void onItemClick(String photo) {
+        Intent intent = new Intent(this, ImageActivity.class);
+        ImageActivity.setExtraPhoto(intent, photo);
+        startActivity(intent);
     }
 }

@@ -16,87 +16,103 @@
         android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/todo_preview_parent"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="80.2dp"
+        android:layout_height="80.dp"
         android:paddingLeft="8.4dp"
         android:paddingRight="8.4dp"
         android:layout_marginRight="8.4dp"
         android:layout_marginLeft="8.4dp">
 
-        <View
-            android:id="@+id/todo_item_divider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/background" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/image_preview"
+            android:layout_gravity="center_vertical"
+            android:src="@mipmap/placeholder"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
 
         <LinearLayout
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:gravity="center_vertical"
+            android:paddingLeft="8.4dp"
+            android:paddingRight="8.4dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--<de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/todo_item_image"
-                android:layout_marginEnd="8dp"
-                android:background="@color/colorPrimary100"
-                android:layout_width="55dp"
-                android:layout_height="55dp" />-->
+            <View
+                android:id="@+id/todo_item_divider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/background" />
 
             <LinearLayout
-                android:id="@+id/todo_item_text_root"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="3"
                 android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/todo_item_title"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textSize="18sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <!--<de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/todo_item_image"
+                    android:layout_marginEnd="8dp"
+                    android:background="@color/colorPrimary100"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp" />-->
 
-                <TextView
-                    android:id="@+id/todo_item_datetime"
-                    android:textColor="@color/colorPrimary100"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:id="@+id/todo_item_text_root"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="match_parent">
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/todo_item_title"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textSize="18sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/todo_item_checkbox_parent"
-                android:gravity="end|center_vertical"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/todo_item_datetime"
+                        android:textColor="@color/colorPrimary100"
+                        android:textSize="14sp"
+                        android:textStyle="italic"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                <CheckBox
-                    android:id="@+id/todo_item_checkbox"
-                    android:theme="@style/App_CheckedBoxStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                </LinearLayout>
 
-                <!--<ImageButton
+                <LinearLayout
                     android:visibility="gone"
-                    android:contentDescription="@null"
-                    android:background="@android:color/transparent"
-                    android:src="@mipmap/menu_icon_validate"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />-->
+                    android:id="@+id/todo_item_checkbox_parent"
+                    android:gravity="end|center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+
+                    <CheckBox
+                        android:id="@+id/todo_item_checkbox"
+                        android:theme="@style/App_CheckedBoxStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <!--<ImageButton
+                        android:visibility="gone"
+                        android:contentDescription="@null"
+                        android:background="@android:color/transparent"
+                        android:src="@mipmap/menu_icon_validate"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />-->
+
+                </LinearLayout>
 
             </LinearLayout>
 

@@ -89,4 +89,5 @@
     <string name="get_photo">Capture photo</string>
     <string name="get_galerie">Galerie</string>
     <string name="error">Error</string>
+    <string name="title_activity_image">ImageActivity</string>
 </resources>
