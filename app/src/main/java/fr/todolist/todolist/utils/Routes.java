@@ -1,8 +1,6 @@
 package fr.todolist.todolist.utils;
 
-import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -50,7 +48,7 @@ public class Routes {
     }
 
     @Nullable
-    public static String GetConsultationID(@NonNull Context context) {
+    public static String GetConsultationID() {
         String ID = null;
 
         if (List.contains(CONSULTATION)) {

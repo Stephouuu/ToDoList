@@ -575,15 +575,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
      * Add photos in the to do item for save it in the database
      */
     private void addPhotoToTodoItem() {
-        info.photos = "";
         ArrayList<String> photos = getPhotos(getIntent());
         if (photos != null) {
-            for (int i = 0 ; i < photos.size() ; ++i) {
-                if (i > 0) {
-                    info.photos += ";";
-                }
-                info.photos += photos.get(i);
-            }
+            info.photos = StaticTools.serializeFile(photos);
         }
     }
 

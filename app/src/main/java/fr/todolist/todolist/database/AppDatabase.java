@@ -36,7 +36,7 @@ public class AppDatabase implements SearchInterface {
     /**
      * Nom du fichier de la base de donnée
      */
-    private static final String NOM_BDD = "todo.db";
+    public static final String BDD_NAME = "todo.db";
 
     /**
      * La base de donnée SQLite
@@ -55,7 +55,7 @@ public class AppDatabase implements SearchInterface {
      * @param context Le contexte
      */
     public AppDatabase(Context context) {
-        mySQLite = new MySQLite(context, NOM_BDD, null, VERSION_BDD);
+        mySQLite = new MySQLite(context, BDD_NAME, null, VERSION_BDD);
         this.context = context;
     }
 
@@ -142,7 +142,7 @@ public class AppDatabase implements SearchInterface {
         values.put(MySQLite.ALARM_COL_TITLE, alert.title);
         values.put(MySQLite.ALARM_COL_CONTENT, alert.content);
 
-        return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + alert.id, null));
+        return (database.update(MySQLite.ALARM_TABLE_NAME, values, MySQLite.ALARM_COL_ID + " = " + alert.id, null));
     }
 
     /**
@@ -248,7 +248,18 @@ public class AppDatabase implements SearchInterface {
     @Nullable
     public TodoItemInfo getItemByID(int id) {
         List<TodoItemInfo> list = getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_ID + " ='" + id + "';");
-        return (list.get(0));
+        return ((list.size() > 0) ? list.get(0) : null);
+    }
+
+    /**
+     * Get a Alert by the ID
+     * @param id The ID
+     * @return The item found
+     */
+    @Nullable
+    public AlertInfo getAlertByID(int id) {
+        List<AlertInfo> list = getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME + " WHERE " + MySQLite.ALARM_COL_ID + " ='" + id + "';");
+        return ((list.size() > 0) ? list.get(0) : null);
     }
 
     private List<TodoItemInfo> getTodoItemResult(String query) {

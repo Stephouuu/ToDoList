@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements SearchInterface, 
     }
 
     private void refreshRoutes() {
-        String itemID = Routes.GetConsultationID(getApplicationContext());
+        String itemID = Routes.GetConsultationID();
         if (itemID != null) {
             TodoItemInfo item = database.getItemByID(Integer.valueOf(itemID));
             if (item != null) {

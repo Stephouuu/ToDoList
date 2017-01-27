@@ -104,6 +104,17 @@ public class StaticTools {
         }
     }
 
+    public static String serializeFile(List<String> photos) {
+        String ret = "";
+        for (int i = 0 ; i < photos.size() ; ++i) {
+            if (i > 0) {
+                ret += ";";
+            }
+            ret += photos.get(i);
+        }
+        return (ret);
+    }
+
     public static boolean copyStreamToStream(InputStream input, OutputStream output) {
         boolean result = false;
         try {
