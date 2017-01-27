@@ -26,6 +26,9 @@ import fr.todolist.todolist.utils.StaticTools;
  * Created by Stephane on 25/01/2017.
  */
 
+/**
+ * Manage the illustrations in the GridView
+ */
 public class ImageGridAdapter extends BaseAdapter {
 
     private final static int PHOTO_MAX_COUNT = 30;
@@ -41,6 +44,10 @@ public class ImageGridAdapter extends BaseAdapter {
         data = photos;
     }
 
+    /**
+     * Set the datas
+     * @param data An array corresponding to the path of the photos
+     */
     public void setAll(ArrayList<String> data) {
         this.data = data;
         notifyDataSetChanged();
@@ -109,7 +116,7 @@ public class ImageGridAdapter extends BaseAdapter {
         if (bitmap == null) {
             File exist = new File(photo);
             if (exist.exists()) {
-                imageView.setImageResource(R.mipmap.placeholder);
+                imageView.setImageResource(R.drawable.placeholder);
                 new ImageDiskAsyncTask(activity, photo, new ImageDiskAsyncTaskInterface() {
                     @Override
                     public void onFinish(Bitmap bitmap) {

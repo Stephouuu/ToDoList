@@ -12,6 +12,9 @@ import fr.todolist.todolist.utils.StaticTools;
  * Created by Stephane on 25/01/2017.
  */
 
+/**
+ * Grid view auto resizable
+ */
 public class AutoResizableGridView extends GridView {
     private float scale;
     private int nbLine;

@@ -8,6 +8,9 @@ import android.support.v7.widget.RecyclerView;
  * Created by Stephane on 01/12/2016.
  */
 
+/**
+ * Manage the hiding toolbar and FAB on scroll animation
+ */
 public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
 
     private static final int HIDE_THRESHOLD = 20;

@@ -7,6 +7,9 @@ import android.os.Parcelable;
  * Created by Stephane on 20/01/2017.
  */
 
+/**
+ * Filter structure
+ */
 public class TodoItemFilter implements Parcelable {
 
     public static final int STATUS_TODO = 1;

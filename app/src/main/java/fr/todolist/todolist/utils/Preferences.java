@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Cette classe a pour fonction de gérer les préférences de l'application.
+ * This class manage the user preferences
  */
 public class Preferences {
 
@@ -19,7 +19,7 @@ public class Preferences {
     private final static String SORTING_DATE = "SORTING.DATE";
 
     /**
-     * Retourne l'instance par défaut des préférences partagées.
+     * Return the instance of the shared preferences
      *
      * @param context Le contexte
      * @return L'instance par défaut

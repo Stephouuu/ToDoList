@@ -20,6 +20,10 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  * Created by Stephane on 16/01/2017.
  */
 
+
+/**
+ * Manage the application database
+ */
 public class AppDatabase implements SearchInterface {
 
     private Context context;
@@ -69,6 +73,11 @@ public class AppDatabase implements SearchInterface {
         database.close();
     }
 
+    /**
+     * Insert a To doItemInfo
+     * @param item The item
+     * @return The item
+     */
     public TodoItemInfo insertItem(TodoItemInfo item) {
         ContentValues values = new ContentValues();
         values.put(MySQLite.TODO_COL_TITLE, item.title);
@@ -87,6 +96,12 @@ public class AppDatabase implements SearchInterface {
         return (item);
     }
 
+
+    /**
+     * Insert a AlertInfo in the database
+     * @param alert The alert
+     * @return The alert
+     */
     public AlertInfo insertItem(AlertInfo alert) {
         ContentValues values = new ContentValues();
         values.put(MySQLite.ALARM_COL_ID_ITEM, alert.idTodoItem);
@@ -97,6 +112,11 @@ public class AppDatabase implements SearchInterface {
         return (alert);
     }
 
+    /**
+     * Update a To doItemInfo in the database
+     * @param item The item
+     * @return The number of row reached
+     */
     public int updateItem(TodoItemInfo item) {
         item.dateTime = DateTimeManager.formatDateTime(item.year, item.month, item.day, item.hour, item.minute);
 
@@ -125,6 +145,11 @@ public class AppDatabase implements SearchInterface {
         return (database.update(MySQLite.TODO_TABLE_NAME, values, MySQLite.TODO_COL_ID + " = " + alert.id, null));
     }
 
+    /**
+     * Return the AlertInfo corresponding to the ID
+     * @param id The ID to get
+     * @return The AlertInfo corresponding to the ID
+     */
     public AlertInfo getAlertInfoByItemID(int id) {
         List<AlertInfo> result = getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME + " WHERE " + MySQLite.ALARM_COL_ID_ITEM + " = " + id + ";");
         if (result.size() > 0) {
@@ -133,28 +158,55 @@ public class AppDatabase implements SearchInterface {
         return (null);
     }
 
+    /**
+     * Get the alerts
+     * @return All Alerts in the Database
+     */
     public List<AlertInfo> getAlerts() {
         return (getAlertResult("SELECT * FROM " + MySQLite.ALARM_TABLE_NAME));
     }
 
+    /**
+     * Delete a to doItemInfo corresponding to the ID
+     * @param id The id of the item to delete
+     * @return Number of row reached
+     */
     public int deleteItem(long id) {
         return (database.delete(MySQLite.TODO_TABLE_NAME, MySQLite.TODO_COL_ID + " = "  + id, null));
     }
 
+    /**
+     * Delete a AlertInfo corresponding to the ID
+     * @param id id The id of the alert to delete
+     * @return Number of row reached
+     */
     public int deleteAlert(int id) {
         return (database.delete(MySQLite.ALARM_TABLE_NAME, MySQLite.ALARM_COL_ID + " = " + id, null));
     }
 
+    /**
+     * Return the Filter
+     * @return NULL
+     */
     @Override
     public TodoItemFilter getFilter() {
         return null;
     }
 
+    /**
+     * Return the sorting Information
+     * @return NULL
+     */
     @Override
     public SortingInfo getSortingInfo() {
         return (null);
     }
 
+    /**
+     * Return a To doItemInfo list order by date
+     * @param date The order
+     * @return The list of item found
+     */
     @Override
     public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
         String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
@@ -162,13 +214,25 @@ public class AppDatabase implements SearchInterface {
                 + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
+    /**
+     * Return a To doItemInfo list corresponding to the title
+     * @param toSearch The title to search
+     * @param date The order
+     * @return The list of item found
+     */
     @Override
     public List<TodoItemInfo> getItemsByTitle(String toSearch, SortingInfo.Type date) {
         String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
-        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '" + toSearch + "%'"
+        return (getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_TITLE + " LIKE '%" + toSearch + "%'"
                 + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC, " + MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
+    /**
+     * Return a To doItemInfo list corresponding of the content
+     * @param toSearch The content to search
+     * @param date The order
+     * @return The list of item found
+     */
     @Override
     public List<TodoItemInfo> getItemsByContent(String toSearch, SortingInfo.Type date) {
         String orderDate = (date == SortingInfo.Type.Ascendant) ? "ASC" : "DESC";
@@ -176,6 +240,11 @@ public class AppDatabase implements SearchInterface {
                 + " ORDER BY " + MySQLite.TODO_COL_FLAG_STATUS + " DESC,"+ MySQLite.TODO_COL_DUE_DATE + " " + orderDate + ";"));
     }
 
+    /**
+     * Get a To doItemInfo by the ID
+     * @param id The ID
+     * @return The item found
+     */
     @Nullable
     public TodoItemInfo getItemByID(int id) {
         List<TodoItemInfo> list = getTodoItemResult("SELECT * FROM " + MySQLite.TODO_TABLE_NAME + " WHERE " + MySQLite.TODO_COL_ID + " ='" + id + "';");
@@ -212,12 +281,6 @@ public class AppDatabase implements SearchInterface {
         return (results);
     }
 
-    /**
-     * Récuperer les infos d'un cursor et les convertis en TodoItemInfo
-     *
-     * @param cursor Le curseur
-     * @return L'item
-     */
     private TodoItemInfo cursorToTodoItemInfo(Cursor cursor) {
         TodoItemInfo item = new TodoItemInfo();
         item.id = cursor.getInt(MySQLite.TODO_NUM_COL_ID);

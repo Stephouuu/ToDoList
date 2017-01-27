@@ -25,6 +25,9 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  * Created by Stephane on 17/01/2017.
  */
 
+/**
+ * Manage the alarm of the application
+ */
 public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     private final static String EXTRA_ALARM = "extra.receiver.alert";
@@ -33,6 +36,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     @NonNull
     private static final AtomicInteger id = new AtomicInteger(0);
 
+    /**
+     * Receive the alarm information
+     * @param context The context
+     * @param intent The intent
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         AlertInfo alert = intent.getParcelableExtra(EXTRA_ALARM);
@@ -87,6 +95,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         database.updateItem(item);
     }
 
+    /**
+     * Add a new alarm
+     * @param context The context
+     * @param item The item
+     * @param ms The delay
+     */
     public static void addAlarm(Context context, TodoItemInfo item, long ms) {
         AlertInfo alert = new AlertInfo();
         alert.idTodoItem = (int)item.id;
@@ -105,6 +119,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         alarmManager.set(AlarmManager.RTC_WAKEUP, ms, pIntent);
     }
 
+    /**
+     * Delete an alarm
+     * @param context The context
+     * @param idItem The id of the item
+     */
     public static void deleteAlarm(Context context, int idItem) {
         AppDatabase database = new AppDatabase(context);
         database.open();

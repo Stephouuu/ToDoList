@@ -13,6 +13,9 @@ import java.util.Calendar;
 
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
 
+/**
+ * Create and Manage Time Picker fragment
+ */
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
     @Override

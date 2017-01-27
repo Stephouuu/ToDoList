@@ -7,6 +7,9 @@ import android.os.Parcelable;
  * Created by Stephane on 17/01/2017.
  */
 
+/**
+ * Structure of a Alert Info
+ */
 public class AlertInfo implements Parcelable {
 
     public int id;

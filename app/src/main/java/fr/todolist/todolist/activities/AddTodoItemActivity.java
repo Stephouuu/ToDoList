@@ -60,25 +60,31 @@ import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemInfo;
 import fr.todolist.todolist.views.AutoResizableGridView;
 
+/**
+ * This class is used to manage the Add/Edition/consultation task
+ */
 public class AddTodoItemActivity extends AppCompatActivity implements AddTodoItemInterface, ImageGridInterface {
 
+    /**
+     * Mode of this activity
+     */
     public enum Mode {
         Add,
         Consultation,
         Edit,
     }
 
-    public static final String TEMP_FOLDER = "temp";
+    private static final String TEMP_FOLDER = "temp";
 
-    public static final String EXTRA_MODE = "mode";
-    public static final String EXTRA_ITEM = "item";
-    public static final String EXTRA_PHOTOS = "photos";
+    private static final String EXTRA_MODE = "mode";
+    private static final String EXTRA_ITEM = "item";
+    private static final String EXTRA_PHOTOS = "photos";
 
-    public final static String PHOTO_PREFIX = "photo";
-    public final static String PHOTO_SUFFIX = ".jpg";
+    private final static String PHOTO_PREFIX = "photo";
+    private final static String PHOTO_SUFFIX = ".jpg";
 
-    public static final int REQUEST_CODE_PHOTO_CAPTURE = 3;
-    public static final int REQUEST_CODE_PHOTO_IMPORT = 4;
+    private static final int REQUEST_CODE_PHOTO_CAPTURE = 3;
+    private static final int REQUEST_CODE_PHOTO_IMPORT = 4;
 
     private View root;
     private Mode mode;
@@ -106,19 +112,39 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
 
     private String photoToUpload;
 
+    /**
+     * Return the photos used by the activity
+     * @param intent The intent of the activity
+     * @return A list of path corresponding to the photos
+     */
     public static ArrayList<String> getPhotos(Intent intent) {
         ArrayList<String> strings = intent.getStringArrayListExtra(EXTRA_PHOTOS);
         return strings;
     }
 
+    /**
+     * Set the photos used by the activity
+     * @param intent The intent to stock the photos
+     * @param value A list of photo path
+     */
     public static void setPhotos(Intent intent, ArrayList<String> value) {
         intent.putStringArrayListExtra(EXTRA_PHOTOS, value);
     }
 
+    /**
+     * Set the mode of this activity
+     * @param intent The intent of the activity
+     * @param value See Mode
+     */
     static public void setExtraMode(Intent intent, Mode value) {
         intent.putExtra(EXTRA_MODE, value.ordinal());
     }
 
+    /**
+     * Get the mode of this activity
+     * @param intent The intent of this activity
+     * @return The mode
+     */
     static public Mode getExtraMode(Intent intent) {
         int mode = intent.getIntExtra(EXTRA_MODE, Mode.Add.ordinal());
         Mode ret = Mode.Add;
@@ -132,14 +158,28 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         return (ret);
     }
 
+    /**
+     * Set the default item
+     * @param intent The intent
+     * @param item The item
+     */
     static public void setExtraItem(Intent intent, TodoItemInfo item) {
         intent.putExtra(EXTRA_ITEM, item);
     }
 
+    /**
+     * Get the default Item
+     * @param intent The intent
+     * @return The item
+     */
     static public TodoItemInfo getExtraItem(Intent intent) {
         return (intent.getParcelableExtra(EXTRA_ITEM));
     }
 
+    /**
+     * Create the activity
+     * @param savedInstanceState The saved instance state of the previous activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -275,6 +315,12 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Called after startActivityForResult
+     * @param requestCode The requestCode
+     * @param resultCode The resultCode
+     * @param data The data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -326,12 +372,19 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         return false;
     }
 
+    /**
+     * Resize the grid of the illustrations
+     * @param size the number of item in
+     */
     public void resizeGrid(int size) {
         float nbLine = (float) (size) / (float) gridView.getNumColumns();
         nbLine = (float) Math.ceil(nbLine);
         gridView.setNbLine((int) nbLine);
     }
 
+    /**
+     * Set the status to "done" for the current item
+     */
     private void done() {
         AlarmReceiver.deleteAlarm(getApplicationContext(), (int)info.id);
         info.status = TodoItemInfo.Status.Done;
@@ -341,6 +394,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
+    /**
+     * Delete the item
+     */
     private void delete() {
         StaticTools.deleteFiles(StaticTools.deserializeFiles(info.photos, ";"));
         AlarmReceiver.deleteAlarm(getApplicationContext(), (int)info.id);
@@ -350,6 +406,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
+    /**
+     * Refresh the edit mode
+     */
     private void refreshEditMode() {
         titleEditText.setText(info.title);
         contentEditText.setText(info.content);
@@ -373,6 +432,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         refreshImages();
     }
 
+    /**
+     * Enable or disable the fields
+     * @param value True or False
+     */
     private void childSetEnabled(boolean value) {
         titleEditText.setEnabled(value);
         contentEditText.setEnabled(value);
@@ -385,6 +448,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         gridView.setEnabled(value);
     }
 
+    /**
+     * Refresh the illustrations
+     */
     private void refreshImages() {
         String[] photos = info.photos.split(";");
         ArrayList<String> list = new ArrayList<>();
@@ -396,6 +462,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         adapter.setAll(list);
     }
 
+    /**
+     * Confirm field for save the data
+     * @return
+     */
     private boolean confirm() {
         return (confirmTitle() && confirmContent() && confirmDate()
                 && confirmTime());
@@ -501,6 +571,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Add photos in the to do item for save it in the database
+     */
     private void addPhotoToTodoItem() {
         info.photos = "";
         ArrayList<String> photos = getPhotos(getIntent());
@@ -514,6 +587,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Create the interval dialog for define the interval of the reminder
+     */
     private void createRecurrenceIntervalDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final LayoutInflater inflater = getLayoutInflater();
@@ -555,6 +631,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         StaticTools.showKeyboard(getApplicationContext());
     }
 
+    /**
+     * Create the dialog of the priority notification select
+     */
     private void createPriorityDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final LayoutInflater inflater = getLayoutInflater();
@@ -696,6 +775,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Get the capture photo file
+     * @return The new File
+     */
     private File getCapturePhotoFile() {
         File dir = getTempPhotoDir();
         if (dir != null) {
@@ -776,6 +859,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Rotate the image accordingly to the camera orientation
+     * @param photo The path of the photo
+     */
     private void rotateImage(String photo) {
         ExifInterface exif;
         try {
@@ -808,6 +895,11 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Remove the photo
+     * @param photo
+     * @param confirm
+     */
     private void removePhoto(final String photo, boolean confirm) {
         ArrayList<String> photos = getPhotos(getIntent());
         if (photos != null) {
@@ -832,6 +924,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Callback called when the user want to delete an illustration
+     * @param toDelete The photo to delete
+     */
     @Override
     public void onDeleteClick(String toDelete) {
         if (mode != Mode.Consultation) {
@@ -840,6 +936,9 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Callback called when the user want to add an illustration
+     */
     @Override
     public void onAddButtonClick() {
         if (mode != Mode.Consultation) {
@@ -847,6 +946,10 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
         }
     }
 
+    /**
+     * Callback called when the user want to examine an illustration
+     * @param photo The photo
+     */
     @Override
     public void onItemClick(String photo) {
         Intent intent = new Intent(this, ImageActivity.class);

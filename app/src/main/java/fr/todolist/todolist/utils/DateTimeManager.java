@@ -18,6 +18,9 @@ import fr.todolist.todolist.R;
  * Created by Stephane on 18/01/2017.
  */
 
+/**
+ * Utility class for manage the date time
+ */
 public class DateTimeManager {
 
     private static String[] MonthArray = new String[] {
@@ -29,6 +32,11 @@ public class DateTimeManager {
             "st", "nd", "rd"
     };
 
+    /**
+     * Cache a string date time into a long unix time
+     * @param dateTime The date time
+     * @return The unix time
+     */
     public static long castDateTimeToUnixTime(String dateTime) {
         Calendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -47,6 +55,12 @@ public class DateTimeManager {
         return (0);
     }
 
+    /**
+     * Apply unix time to a To do item info structure
+     * @param info The to do item info structure
+     * @param ms The unix time
+     * @return The to do item info filled
+     */
     public static TodoItemInfo retrieveDataTime(TodoItemInfo info, long ms) {
         Calendar cal = new GregorianCalendar();
         cal.setTimeInMillis(ms);
@@ -58,6 +72,15 @@ public class DateTimeManager {
         return (info);
     }
 
+    /**
+     * Format the date time with date
+     * @param year The year
+     * @param month The month
+     * @param day The day
+     * @param hour The hour
+     * @param minute The minute
+     * @return The formated string
+     */
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         Calendar cal = Calendar.getInstance();
@@ -70,6 +93,12 @@ public class DateTimeManager {
         return dateFormat.format(date);
     }
 
+    /**
+     * Apply date time to a to do item info structure
+     * @param info The structure
+     * @param dateTime the date time
+     * @return The structure filled
+     */
     public static TodoItemInfo retrieveDateTime(TodoItemInfo info, String dateTime) {
         Calendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -91,6 +120,12 @@ public class DateTimeManager {
         return (info);
     }
 
+    /**
+     * Convert a value with a type to unix time
+     * @param value The value
+     * @param type The type
+     * @return The unix time
+     */
     public static long getMs(int value, String type) {
         long ret = 0;
 
@@ -107,6 +142,12 @@ public class DateTimeManager {
         return (ret);
     }
 
+    /**
+     * Cast Unix time in dayOfMonth for exemeple
+     * @param type The type
+     * @param value The valye
+     * @return The ms
+     */
     public static long getValueFromMs(String type, long value) {
         long ret = 0;
 
@@ -123,10 +164,26 @@ public class DateTimeManager {
         return (ret);
     }
 
+    /**
+     * Check if the unix time is not in the past
+     * @param time The unix time
+     * @return True or false
+     */
     public static boolean isDateTimeValid(long time) {
         return (Calendar.getInstance().getTimeInMillis() < time);
     }
 
+    /**
+     * Get user friendly date time
+     * @param context The context
+     * @param date The date
+     * @param year The year
+     * @param month The month
+     * @param day The day
+     * @param hour The houyr
+     * @param minute The minute
+     * @return The date time formatted
+     */
     public static String getUserFriendlyDateTime(Context context, String date, int year, int month,
                                                  int day, int hour, int minute) {
 
@@ -175,6 +232,11 @@ public class DateTimeManager {
         return (ret);
     }
 
+    /**
+     * Cast int day to string day
+     * @param day The day
+     * @return The day in string
+     */
     public static String getDay(int day) {
         String str = String.valueOf(day);
 

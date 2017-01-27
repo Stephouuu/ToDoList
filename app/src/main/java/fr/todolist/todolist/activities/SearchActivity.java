@@ -40,6 +40,9 @@ import fr.todolist.todolist.utils.SortingInfo;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
+/**
+ * This class goal's is to manage the search section of the application.
+ */
 public class SearchActivity extends AppCompatActivity implements SearchInterface, TodoListInterface {
 
     private static final String EXTRA_SEARCH = "search.activity.search";
@@ -135,6 +138,9 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         initPopup();
     }
 
+    /**
+     * Init the filter popup
+     */
     private void initPopup() {
         final CheckedTextView inProgress = (CheckedTextView)findViewById(R.id.checkbox_inprogress);
         final CheckedTextView ok = (CheckedTextView)findViewById(R.id.checkbox_ok);
@@ -308,6 +314,9 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         return true;
     }
 
+    /**
+     * Create the ViewPager fragments
+     */
     private void createFragments() {
         searchTitleFragment = new TodoListFragment();
         Bundle args1 = new Bundle();
@@ -320,6 +329,10 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         searchContentFragment.setArguments(args2);
     }
 
+    /**
+     * Init and Setup the ViewPager
+     * @param viewPager The ViewPager
+     */
     private void setupViewPager(ViewPager viewPager) {
         SearchViewPagerAdapter adapter = new SearchViewPagerAdapter(getSupportFragmentManager());
 
@@ -363,16 +376,29 @@ public class SearchActivity extends AppCompatActivity implements SearchInterface
         return false;
     }
 
+    /**
+     * Return the current filter
+     * @return The filter
+     */
     @Override
     public TodoItemFilter getFilter() {
         return (filter);
     }
 
+    /**
+     * Return the sorting information
+     * @return The sorting information
+     */
     @Override
     public SortingInfo getSortingInfo() {
         return (sorting);
     }
 
+    /**
+     * Get the item storred in the database order by the date
+     * @param date
+     * @return
+     */
     @Override
     public List<TodoItemInfo> getItemsByDueDate(SortingInfo.Type date) {
         return (database.getItemsByDueDate(date));

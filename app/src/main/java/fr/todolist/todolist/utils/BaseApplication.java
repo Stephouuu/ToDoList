@@ -8,6 +8,9 @@ import net.danlew.android.joda.JodaTimeAndroid;
  * Created by Stephane on 18/01/2017.
  */
 
+/**
+ * Android Base Application
+ */
 public class BaseApplication extends MultiDexApplication {
 
     @Override

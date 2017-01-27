@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 /**
- * Cette classe a pour but d'handle les routes in-App
+ * Manage inApp path
  */
 public class Routes {
 
@@ -24,8 +24,8 @@ public class Routes {
     private static final List<String> List = new ArrayList<>();
 
     /**
-     * Charge le scheme reçu
-     * @param uri Le scheme
+     * Load the input scheme
+     * @param uri Scheme
      */
     public static void Load(Uri uri) {
         if (uri != null) {
@@ -62,8 +62,8 @@ public class Routes {
     }
 
     /**
-     * Ajoute une route
-     * @param param La route
+     * Add a path
+     * @param param The path
      */
     private static void addRoute(String param) {
         List.add(param);

@@ -23,6 +23,9 @@ import java.util.List;
 
 import fr.todolist.todolist.R;
 
+/**
+ * Manage the choice when the user want to add a photo
+ */
 public class PhotoAppsAdapter extends BaseAdapter {
 
     /**

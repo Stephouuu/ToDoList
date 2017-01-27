@@ -8,6 +8,9 @@ import android.support.v4.util.LruCache;
  * Created by Stephane on 26/01/2017.
  */
 
+/**
+ * Manage the bitmap of the application with a LRU Cache
+ */
 public class BitmapCache {
 
     private static final float MAX_RATIO = .40f;
@@ -25,24 +28,41 @@ public class BitmapCache {
         return (int) Math.min((long) Integer.MAX_VALUE, longSize);
     }
 
+    /**
+     * Delete the cache
+     */
     public static void deleteAllCache() {
         synchronized (CACHE) {
             CACHE.evictAll();
         }
     }
 
+    /**
+     * Delete element in a cache
+     * @param key The key corresponding of the item to delete
+     */
     public static void deleteInCache(String key) {
         synchronized (CACHE) {
             CACHE.remove(key);
         }
     }
 
+    /**
+     * Add a new element in the cache
+     * @param key The key
+     * @param value The bitmap
+     */
     public static void putInCache(String key, Bitmap value) {
         synchronized (CACHE) {
             CACHE.put(key, value);
         }
     }
 
+    /**
+     * Get an element storred in the cache
+     * @param key The key
+     * @return The bitmap found
+     */
     @Nullable
     public static Bitmap getInCache(String key) {
         synchronized (CACHE) {

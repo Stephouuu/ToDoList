@@ -5,6 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 
+/**
+ * Application database
+ */
 public class MySQLite extends SQLiteOpenHelper {
 
     public static final String TODO_TABLE_NAME = "Todo";

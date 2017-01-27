@@ -7,6 +7,9 @@ import android.os.Parcelable;
  * Created by Stephane on 16/01/2017.
  */
 
+/**
+ * To do item info structure
+ */
 public class TodoItemInfo implements Parcelable {
 
     public enum Status {

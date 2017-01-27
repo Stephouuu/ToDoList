@@ -11,10 +11,18 @@ import java.io.File;
 
 import fr.todolist.todolist.R;
 
+/**
+ * This class is used to examine a photo
+ */
 public class ImageActivity extends AppCompatActivity {
 
     private static final String EXTRA_PHOTO = "photo.path";
 
+    /**
+     * Set the photo to examine
+     * @param intent The intent
+     * @param photo The photo
+     */
     static void setExtraPhoto(Intent intent, String photo) {
         intent.putExtra(EXTRA_PHOTO, photo);
     }
@@ -53,6 +61,9 @@ public class ImageActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Refresh the Image
+     */
     private void refreshImage() {
         File file = new File(photo);
         if (file.exists()) {

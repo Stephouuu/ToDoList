@@ -31,11 +31,17 @@ import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
+/**
+ * Manage the main to do list fragment
+ */
 public class TodoListFragment extends Fragment {
 
     public static final String EXTRA_MODE = "todolist.mode";
     public static final String EXTRA_SEARCH = "todolist.search.param";
 
+    /**
+     * Mode of the TodoList
+     */
     public enum Mode {
         DueDate,
         Title,
@@ -164,10 +170,17 @@ public class TodoListFragment extends Fragment {
         refreshList();
     }
 
+    /**
+     * Set the search parameter for the title and the content
+     * @param parameter
+     */
     public void setSearchParameter(String parameter) {
         searchParameter = parameter;
     }
 
+    /**
+     * Refresh the to do list
+     */
     public void refreshList() {
         List<TodoItemInfo> list = getListItem();
         TodoItemFilter filter = ((SearchInterface)getActivity()).getFilter();

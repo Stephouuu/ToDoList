@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 
 import fr.todolist.todolist.R;
 import fr.todolist.todolist.interfaces.ImageDiskAsyncTaskInterface;
@@ -13,6 +14,9 @@ import fr.todolist.todolist.interfaces.ImageDiskAsyncTaskInterface;
  * Created by Stephane on 26/01/2017.
  */
 
+/**
+ * Load an image in asynchronous
+ */
 public class ImageDiskAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private Context context;
@@ -20,12 +24,24 @@ public class ImageDiskAsyncTask extends AsyncTask<Void, Void, Void> {
     private String image;
     private Bitmap bitmap;
 
+    /**
+     * Public constructor
+     * @param context The context activity
+     * @param image The path of the image to load
+     * @param listener A listener
+     */
     public ImageDiskAsyncTask(Context context, String image, ImageDiskAsyncTaskInterface listener) {
         this.context = context;
         this.image = image;
         this.listener = listener;
     }
 
+    /**
+     * Method called in other thread
+     * @param params Void
+     * @return Null
+     */
+    @Nullable
     @Override
     protected Void doInBackground(Void... params) {
 
@@ -47,10 +63,17 @@ public class ImageDiskAsyncTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+    /**
+     * Execute this task in a threadpoll
+     */
     public void execute() {
         executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /**
+     * Called on the main thread after doInBackground finished
+     * @param result Void
+     */
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);

@@ -25,13 +25,21 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  * Created by Stephane on 20/01/2017.
  */
 
+/**
+ * Manage the list of the to do
+ */
 public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
 
     private Activity activity;
     private View parent;
     private TodoListInterface listener;
-    private ImageDiskAsyncTask imageDiskAsyncTask;
 
+    /**
+     * Public constructor
+     * @param activity The activity
+     * @param parent The view inflated
+     * @param listener The listener
+     */
     private TodoListRecyclerItemViewHolder(Activity activity, View parent, TodoListInterface listener) {
         super(parent);
         this.activity = activity;
@@ -39,10 +47,21 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         this.listener = listener;
     }
 
+    /**
+     * Create new view
+     * @param activity The activity
+     * @param parent The view inflated
+     * @param listener The listener
+     * @return The new view holder
+     */
     public static TodoListRecyclerItemViewHolder newInstance(Activity activity, View parent, TodoListInterface listener) {
         return (new TodoListRecyclerItemViewHolder(activity, parent, listener));
     }
 
+    /**
+     * Refresh the content of the view
+     * @param item The item
+     */
     public void refreshView(final TodoItemInfo item) {
         final CheckBox selectCheckBox = (CheckBox)parent.findViewById(R.id.todo_item_checkbox);
 
@@ -89,6 +108,12 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
+    /**
+     * Refresh the category
+     * @param item The item
+     * @param isFirstStatus If this item is the first of his status
+     * @param isFirstDate If this item is the first of his date
+     */
     public void refreshCategory(TodoItemInfo item, boolean isFirstStatus, boolean isFirstDate) {
         TextView textView = (TextView) parent.findViewById(R.id.todo_preview_category);
         String text = DateTimeManager.getDay(item.day) + " " + DateTimeManager.getMonth(item.month)
@@ -126,6 +151,10 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    /**
+     * Refresh the Image
+     * @param item The to do item info
+     */
     public void refreshImage(TodoItemInfo item) {
         final ImageView imageView = (ImageView)parent.findViewById(R.id.image_preview);
         String[] photos = StaticTools.deserializeFiles(item.photos, ";");
@@ -151,6 +180,10 @@ public class TodoListRecyclerItemViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    /**
+     * Refresh the title of the item
+     * @param title The title
+     */
     public void refreshTitle(String title) {
         ((TextView)parent.findViewById(R.id.todo_item_title)).setText(title);
     }

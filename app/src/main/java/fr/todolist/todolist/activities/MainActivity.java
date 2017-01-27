@@ -34,6 +34,9 @@ import fr.todolist.todolist.utils.StaticTools;
 import fr.todolist.todolist.utils.TodoItemFilter;
 import fr.todolist.todolist.utils.TodoItemInfo;
 
+/**
+ * This is the main Activity of the application
+ */
 public class MainActivity extends AppCompatActivity implements SearchInterface, TodoListInterface {
 
     enum MainFabMode {

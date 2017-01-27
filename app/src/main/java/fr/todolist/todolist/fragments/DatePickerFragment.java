@@ -12,6 +12,9 @@ import java.util.Calendar;
 
 import fr.todolist.todolist.interfaces.AddTodoItemInterface;
 
+/**
+ * Create and Manage Date Picker fragment
+ */
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     @Override

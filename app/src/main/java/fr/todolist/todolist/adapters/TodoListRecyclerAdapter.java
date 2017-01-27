@@ -23,6 +23,10 @@ import fr.todolist.todolist.utils.TodoItemInfo;
  * Created by Stephane on 16/01/2017.
  */
 
+
+/**
+ * Manage views of the list of to do's
+ */
 public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<TodoItemInfo> listOverdue;
@@ -140,6 +144,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
+    /**
+     * Get the item by the index
+     * @param index A index between 0 and the size of the list
+     * @return The item corresponding to the index
+     */
     private TodoItemInfo getItem(int index) {
         TodoItemInfo item = null;
 
@@ -154,6 +163,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return (item);
     }
 
+    /**
+     * Check if this item is the first of his status
+     * @param item The item
+     * @return True or False
+     */
     private boolean isFirstStatus(TodoItemInfo item) {
         boolean ret = false;
 
@@ -169,6 +183,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return (ret);
     }
 
+    /**
+     * Check if the item is the first of his date
+     * @param item The item
+     * @return True or false
+     */
     private boolean isFirstDate(TodoItemInfo item) {
         for (List<TodoItemInfo> items : listInProgress) {
             if (items.size() > 0 && items.get(0) == item) {
@@ -178,6 +197,10 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return (false);
     }
 
+    /**
+     * Return the data size
+     * @return Size
+     */
     public int getBasicItemCount() {
         return (listTodo.size() + listOverdue.size() + listDone.size());
     }
@@ -192,6 +215,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return (getBasicItemCount() + (header?1:0));
     }
 
+    /**
+     * Return the type of the view
+     * @param position The position of the item in the list
+     * @return The item type
+     */
     @Override
     public int getItemViewType(int position) {
         if (isHeader(position)) {
@@ -200,6 +228,11 @@ public class TodoListRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         return TYPE_ITEM;
     }
 
+    /**
+     * Check if the item is the first in the data list
+     * @param position The position of the item
+     * @return True or False
+     */
     private boolean isHeader(int position) {
         return (position == 0 && header);
     }

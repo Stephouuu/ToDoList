@@ -19,6 +19,9 @@ import fr.todolist.todolist.utils.TodoItemFilter;
  * Created by Stephane on 25/01/2017.
  */
 
+/**
+ * Manage the filter and sorting dialog
+ */
 public class FilterSortAlertDialog extends AlertDialog.Builder {
 
     private Activity activity;
@@ -34,6 +37,13 @@ public class FilterSortAlertDialog extends AlertDialog.Builder {
 
     private FilterSortDialogInterface listener;
 
+    /**
+     * Public constructor
+     * @param activity The activity
+     * @param baseFilter The default filter
+     * @param baseSorting The default sorting
+     * @param listener The listener
+     */
     public FilterSortAlertDialog(Activity activity, TodoItemFilter baseFilter, SortingInfo baseSorting,
                                  FilterSortDialogInterface listener) {
         super(activity);

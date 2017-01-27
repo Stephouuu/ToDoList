@@ -19,6 +19,9 @@ import java.util.List;
  * Created by Stephane on 16/01/2017.
  */
 
+/**
+ * Utility class
+ */
 public class StaticTools {
 
     /**
