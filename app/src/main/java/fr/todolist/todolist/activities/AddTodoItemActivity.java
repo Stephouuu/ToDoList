@@ -454,10 +454,11 @@ public class AddTodoItemActivity extends AppCompatActivity implements AddTodoIte
     private void refreshImages() {
         String[] photos = info.photos.split(";");
         ArrayList<String> list = new ArrayList<>();
-        Log.i("image", "nb: " + photos.length);
+        Log.i("image", "nb: add: " + photos.length);
         for (String photo : photos) {
-            Log.i("image", photo);
-            list.add(photo);
+            if (!photo.isEmpty()) {
+                list.add(photo);
+            }
         }
         adapter.setAll(list);
     }
